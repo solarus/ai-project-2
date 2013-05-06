@@ -1,0 +1,6 @@
+*.gfo
+www/planner-haskell/dist
+www/planner-haskell/cabal-dev
+www/planner-haskell/planner
+www/planner-haskell/planner.hi
+www/planner-haskell/planner.o

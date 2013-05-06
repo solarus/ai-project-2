@@ -4,7 +4,7 @@ import cgi
 from subprocess import Popen, PIPE
 
 GF_LIB_PATH = "/usr/local/share/gf-3.4/lib"
-PARSER = ["/usr/local/bin/gf", "--gf-lib-path", GF_LIB_PATH, 
+PARSER = ["/usr/local/bin/gf", "--gf-lib-path", GF_LIB_PATH,
           "--run", "ShrdliteEng.gf", "ShrdliteSem.gf"]
 GFCOMMAND = 'p -lang=ShrdliteEng "%s" | l -lang=ShrdliteSem'
 
@@ -16,7 +16,7 @@ GF_ERRORS = ["None of these files exists",
              "  constant not found",
              "  no overload instance",
              "  function type expected",
-             "  missing record fields", 
+             "  missing record fields",
              "  cannot unify",
              ]
 
@@ -54,7 +54,7 @@ def parse_userinput(userinput):
 
 def main_cgi():
     print HEADER
-    form = cgi.FieldStorage() 
+    form = cgi.FieldStorage()
     userinput = form.getfirst("input")
     if not userinput:
         raise ValueError("I need a CGI parameter 'input'.")

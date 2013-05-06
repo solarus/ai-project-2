@@ -1,6 +1,6 @@
 
 var ParserURL = 'parser.cgi';
-var PlannerURL = 'planner.cgi';
+var PlannerURL = 'planner-haskell/planner.hs';
 
 var WorldWidth = 800;      // pixels
 var WorldHeight = 400;    // pixels
@@ -58,8 +58,8 @@ function initializeSVG() {
 
     var viewBox = [0, 0, WorldWidth, WorldHeight + FloorThickness];
     var svg = $(SVG('svg')).attr({
-        viewBox:viewBox.join(' '), 
-        width:viewBox[2], 
+        viewBox:viewBox.join(' '),
+        width:viewBox[2],
         height:viewBox[3],
     }).appendTo($('#svgdiv'));
 
@@ -74,10 +74,10 @@ function initializeSVG() {
     $(SVG('line')).attr({
         id:'arm',
         x1: StackWidth/2,
-        y1: ArmSize - WorldHeight, 
-        x2: StackWidth/2, 
-        y2: ArmSize, 
-        stroke: 'black', 
+        y1: ArmSize - WorldHeight,
+        x2: StackWidth/2,
+        y2: ArmSize,
+        stroke: 'black',
         'stroke-width': ArmSize,
     }).appendTo(svg);
 
@@ -95,7 +95,7 @@ function initializeSVG() {
 }
 
 function animateMotion(object, path, timeout, duration) {
-    if (path instanceof Array) 
+    if (path instanceof Array)
         path = path.join(" ");
     var animation = SVG('animateMotion');
     $(animation).attr({
@@ -208,17 +208,17 @@ function makeBlock(svg, blockid, stacknr, timeout) {
     case 'square':
     case 'rectangle':
         block = $(SVG('rect')).attr({
-            x: xleft, 
-            y: ytop, 
-            width: dim.width, 
+            x: xleft,
+            y: ytop,
+            width: dim.width,
             height: dim.height
         });
         break;
     case 'ball':
         block = $(SVG('ellipse')).attr({
-            cx: xcenter, 
-            cy: ycenter, 
-            rx: xradius, 
+            cx: xcenter,
+            cy: ycenter,
+            rx: xradius,
             ry: yradius
         });
         break;
@@ -229,7 +229,7 @@ function makeBlock(svg, blockid, stacknr, timeout) {
         });
         break;
     case 'box':
-        var points = [xleft, ytop, xleft, ybottom, xright, ybottom, xright, ytop, 
+        var points = [xleft, ytop, xleft, ybottom, xright, ybottom, xright, ytop,
                       xright-dim.thickness, ytop, xright-dim.thickness, ybottom-dim.thickness,
                       xleft+dim.thickness, ybottom-dim.thickness, xleft+dim.thickness, ytop];
         block = $(SVG('polygon')).attr({
@@ -239,9 +239,9 @@ function makeBlock(svg, blockid, stacknr, timeout) {
     }
     block.attr({
         id: blockid,
-        stroke: 'black', 
-        'stroke-width': 2, 
-        fill: attrs.color, 
+        stroke: 'black',
+        'stroke-width': 2,
+        fill: attrs.color,
     });
     block.appendTo(svg);
 
@@ -256,9 +256,9 @@ function disableInput(timeout) {
         setTimeout(disableInput, 1000*timeout);
     } else {
         $("#inputexamples").blur();
-        $("#inputexamples").prop('disabled', true); 
+        $("#inputexamples").prop('disabled', true);
         $("#userinput").blur();
-        $("#userinput").prop('disabled', true); 
+        $("#userinput").prop('disabled', true);
     }
 }
 
@@ -267,9 +267,9 @@ function enableInput(timeout) {
         setTimeout(enableInput, 1000*timeout);
     } else {
         $("#response").text(systemprompt);
-        $("#inputexamples").prop('disabled', false).val(''); 
+        $("#inputexamples").prop('disabled', false).val('');
         $("#inputexamples option:first").attr('selected','selected');
-        $("#userinput").prop('disabled', false); 
+        $("#userinput").prop('disabled', false);
         $("#userinput").focus().select();
     }
 }
@@ -304,7 +304,7 @@ function userInput() {
     }
     disableInput();
     $.ajax({
-        url: ParserURL, 
+        url: ParserURL,
         data: {input: userinput}
     }).fail(function(jqxhr, status, error) {
         alertError("Internal parser " + status, error);

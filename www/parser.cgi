@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 import cgi
 from subprocess import Popen, PIPE

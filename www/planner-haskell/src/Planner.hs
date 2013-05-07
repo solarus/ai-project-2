@@ -50,6 +50,11 @@ toPDDL initial goal = unlines . execWriter $ do
                 tellSexp ["clear", last l]
             ln
 
+            line ";; Some object are boxes."
+            forM_ (map name (filter ((==Box) . form) (concat initial))) $ \b ->
+                tellSexp ["box", b]
+            ln
+
             line ";; Objects which are _on_ other objects."
             tellOn initial >> ln
 

@@ -32,14 +32,13 @@ toPDDL :: World -> World -> String
 toPDDL initial goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
-        line "(:domain shdrlu)"
-        let floorTiles = map (('_':) . show) [1..length initial]
+        line "(:domain shrdlu)"
         tellSexp (":objects" : blocks ++ floorTiles)
         line "(:init"
 
         indent $ do
             line ";; All objects are smaller than the floor tiles."
-            let smallerThanFloor = [ (f, o) | o <- blocks, f <- floorTiles ]
+            let smallerThanFloor = [ (o, f) | o <- blocks, f <- floorTiles ]
             mapM_ tellSmaller smallerThanFloor >> ln
 
             line ";; Some objects are smaller than others."
@@ -75,6 +74,7 @@ toPDDL initial goal = unlines . execWriter $ do
   where
     allBlocks = sortBy (comparing name) (nub (concat initial))
     blocks    = map name allBlocks
+    floorTiles = map (('f':) . show) [1..length initial]
 
     tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
     tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]
@@ -88,16 +88,17 @@ toPDDL initial goal = unlines . execWriter $ do
                   , o2 <- allBlocks
                   , o1 /= o2
                   , form o1 `notElem` [Pyramid, Ball]
-                  , size o1 > size o2
+                  , size o1 <= size o2
                   ]
 
-    getOn        = map listToPair . map reverse . nGrams 2 . map name . reverse
-    isOnElems    = concatMap getOn
+    getOn        = map listToPair . nGrams 2 . reverse
+    isOnElems    = concatMap getOn . zipWith (:) floorTiles . map (map name)
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
     getIn _       []  = []
     getIn Nothing (o:rest)
-        | form o == Box = getIn (Just o) rest
+                        -- Boxes are inside themselves
+        | form o == Box = (name o, name o) : getIn (Just o) rest
         | otherwise     = getIn Nothing rest
     getIn (Just b) (o:rest)
         | form o == Box = p : getIn (Just o) rest
@@ -106,7 +107,11 @@ toPDDL initial goal = unlines . execWriter $ do
     -- FIXME: What to do if there are multiple boxes? Currently the
     -- outermost box is the only one that counts.
     isInElems = concatMap (getIn Nothing)
-    tellIn world = forM_ (isInElems world) $ \(o1, o2) -> tellSexp ["in", o1, o2]
+    tellIn world = do
+        let elems = isInElems world
+            pairToList (a,b) = [a,b]
+        forM_ elems $ \(o1, o2) -> tellSexp ["in", o2, o1]
+        forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["in-any", o]
 
 
 -- FIXME: Remove this later

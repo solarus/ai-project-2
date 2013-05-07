@@ -1,11 +1,10 @@
-import Network.CGI
+import Control.Applicative ((<$>))
 import Data.Maybe (fromMaybe, fromJust)
-import Data.List (findIndex)
-import Control.Monad (liftM)
+import Network.CGI
 
-type Block = String
-type World = [[Block]]
-type Tree = String
+import Planner
+import Types
+import World
 
 cgiMain :: CGI CGIResult
 cgiMain = do
@@ -14,32 +13,12 @@ cgiMain = do
     let plan = findPlan holding world trees
     output (unlines plan)
 
-findPlan :: Block -> World -> [Tree] -> [String]
-findPlan holding world trees =
-    [ "# Stupid Haskell planner!"
-    , "# Holding: " ++ holding
-    , "# World: " ++ show world
-    ]
-    ++
-
-    [ "# Tree " ++ show n ++ ": " ++ t
-    | (n, t) <- zip [0..] trees
-    ]
-    ++
-
-    [ "This is a nice move!"
-    , "pick " ++ show stacknr
-    , "drop " ++ show stacknr
-    ]
-  where
-    stacknr = fromMaybe 0 (findIndex (not . null) world)
-
-cgiInput :: CGI (Block, World, [Tree])
+cgiInput :: CGI (Maybe Block, World, [Tree])
 cgiInput = do
-    holding <- liftM (fromMaybe "") (getInput "holding")
-    worldStr <- liftM (fromMaybe "") (getInput "world")
-    let world = [ split ',' stack | stack <- split ';' worldStr ]
-    treesStr <- liftM (fromMaybe "") (getInput "trees")
+    holding <- maybe Nothing getBlock <$> getInput "holding"
+    worldStr <- fromMaybe "" <$> getInput "world"
+    let world = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
+    treesStr <- fromMaybe "" <$> getInput "trees"
     let trees = split ';' treesStr
     return (holding, world, trees)
 

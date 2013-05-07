@@ -9,8 +9,8 @@ module Types
     , Tree
     ) where
 
-data Size = Small | Medium | Large | Wide | Tall
-  deriving (Eq, Show)
+data Size = Tall | Wide | Small | Medium | Large
+  deriving (Eq, Show, Ord)
 
 data Color = Black | White | Blue | Green | Yellow | Red
   deriving (Eq, Show)

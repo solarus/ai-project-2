@@ -1,40 +1,13 @@
 module World
-    ( Size(..)
-    , Color(..)
-    , Form(..)
-    , Width
-    , Height
-    , Block(..)
-    , getBlock
+    ( getBlock
     ) where
 
-import           Data.Char
-import           Data.Map (Map, (!))
+import           Data.Map (Map)
 import qualified Data.Map as M
+import           Types
 
-data Size = Small | Medium | Large | Wide | Tall
-  deriving (Eq, Show)
-
-data Color = Black | White | Blue | Green | Yellow | Red
-  deriving (Eq, Show)
-
-data Form = Box | Pyramid | Rectangle | Square | Ball
-  deriving (Eq, Show)
-
-type Width  = Double
-type Height = Double
-
-data Block = Block
-    { form :: Form
-    , size :: Size
-    , color :: Color
-    , width :: Width
-    , height :: Height
-    }
-  deriving (Eq, Show)
-
-getBlock :: String -> Block
-getBlock = (blocks !)
+getBlock :: String -> Maybe Block
+getBlock = (`M.lookup` blocks)
 
 blocks :: Map String Block
 blocks = M.fromList

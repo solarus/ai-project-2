@@ -15,7 +15,7 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 executable planner-haskell
-  main-is: planner.hs
+  main-is: CGI.hs
   hs-source-dirs: ., src
   other-modules: World
   build-depends:  base ==4.6.*

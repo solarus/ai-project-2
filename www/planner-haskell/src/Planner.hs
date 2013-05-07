@@ -81,12 +81,11 @@ toPDDL initial goal = unlines . execWriter $ do
                   , size o1 > size o2
                   ]
 
-    getOn        = map listToPair . nGrams 2 . map name . reverse
+    getOn        = map listToPair . map reverse . nGrams 2 . map name . reverse
     isOnElems    = concatMap getOn
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
     getIn _       []  = []
-    getIn _       [_] = []
     getIn Nothing (o:rest)
         | form o == Box = getIn (Just o) rest
         | otherwise     = getIn Nothing rest

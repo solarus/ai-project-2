@@ -21,3 +21,4 @@ executable planner-haskell
   build-depends:  base ==4.6.*
                 , cgi
                 , containers
+                , mtl

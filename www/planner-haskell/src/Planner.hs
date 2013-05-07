@@ -16,7 +16,7 @@ findPlan holding world trees =
     ++
 
     [ "# Tree " ++ show n ++ ": " ++ t
-    | (n, t) <- zip [0..] trees
+    | (n, t) <- zip [(0::Int)..] trees
     ]
     ++
 

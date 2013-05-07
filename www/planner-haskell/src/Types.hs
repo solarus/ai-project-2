@@ -9,7 +9,8 @@ module Types
     , Tree
     ) where
 
-data Size = Tall | Wide | Small | Medium | Large
+-- TODO: Specialized Ord instance
+data Size = Small | Tall | Wide | Medium | Large
   deriving (Eq, Show, Ord)
 
 data Color = Black | White | Blue | Green | Yellow | Red

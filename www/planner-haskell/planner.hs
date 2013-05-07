@@ -15,7 +15,7 @@ cgiMain = do
     output (unlines plan)
 
 findPlan :: Block -> World -> [Tree] -> [String]
-findPlan holding world tree =
+findPlan holding world trees =
     [ "# Stupid Haskell planner!"
     , "# Holding: " ++ holding
     , "# World: " ++ show world

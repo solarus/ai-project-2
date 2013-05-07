@@ -22,6 +22,7 @@ data Form = Box | Pyramid | Rectangle | Square | Ball
 type Width  = Double
 type Height = Double
 
+-- TODO: Ord instance based on size?
 data Block = Block
     { name :: String
     , form :: Form
@@ -34,5 +35,5 @@ data Block = Block
 
 type World = [[Block]]
 
--- Maybe use the Tree type in PGF instead?
+-- FIXME: Maybe use the Tree type in PGF instead?
 type Tree = String

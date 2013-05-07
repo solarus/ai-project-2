@@ -17,6 +17,7 @@ cabal-version:       >=1.8
 executable planner-haskell
   main-is: CGI.hs
   hs-source-dirs: ., src
+  ghc-options: -Wall
   other-modules: World
   build-depends:  base ==4.6.*
                 , cgi

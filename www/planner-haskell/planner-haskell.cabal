@@ -20,3 +20,4 @@ executable planner-haskell
   other-modules: World
   build-depends:  base ==4.6.*
                 , cgi
+                , containers

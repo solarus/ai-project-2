@@ -45,6 +45,11 @@ toPDDL initial goal = unlines . execWriter $ do
             line ";; Some objects are smaller than others."
             mapM_ tellSmaller smallerThan >> ln
 
+            line ";; Some objects are clear."
+            forM_ (zipWith (:) floorTiles (map (map name) initial)) $ \l ->
+                tellSexp ["clear", last l]
+            ln
+
             line ";; Objects which are _on_ other objects."
             tellOn initial >> ln
 

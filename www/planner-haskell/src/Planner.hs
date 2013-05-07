@@ -5,6 +5,7 @@ import Data.List
 import Data.Ord
 
 import Types
+import Utils
 import World
 
 findPlan :: Maybe Block -> World -> [Tree] -> [String]
@@ -25,73 +26,85 @@ findPlan holding world trees =
     , "drop " ++ show stacknr
     ]
   where
-    stacknr = 1
+    stacknr = 1 :: Int
 
-toPDDL :: World -> String
-toPDDL ws = execWriter $ do
-    tellLn "(define (problem shrdlu)"
-    tellLn "  (:domain shdrlu)"
+toPDDL :: World -> World -> String
+toPDDL initial goal = unlines . execWriter $ do
+    line "(define (problem shrdlu)"
+    indent $ do
+        line "(:domain shdrlu)"
+        let floorTiles = map (('_':) . show) [1..length initial]
+        tellSexp (":objects" : blocks ++ floorTiles)
+        line "(:init"
 
-    let allBlocks = sortBy (comparing name) (nub (concat ws))
-        blocks    = map name allBlocks
-        floor     = map (('f':) . show) [1..length ws]
-    tellLn $ "  (:objects " ++ intercalate " " (blocks ++ floor) ++ " )"
+        indent $ do
+            line ";; All objects are smaller than the floor tiles."
+            let smallerThanFloor = [ (f, o) | o <- blocks, f <- floorTiles ]
+            mapM_ tellSmaller smallerThanFloor >> ln
 
-    tellLn "  (:init"
+            line ";; Some objects are smaller than others."
+            mapM_ tellSmaller smallerThan >> ln
 
-    tellLn "    ;; Everything is smaller than the floor tiles."
-    let smallerThanFloor = [ (f, o) | o <- blocks, f <- floor ]
-    mapM_ tellSmaller smallerThanFloor
+            line ";; Objects which are _on_ other objects."
+            tellOn initial >> ln
 
-    tellLn "\n    ;; Some objects are smaller than others."
-    let smallerThan = [ (name o1, name o2)
-                      | o1 <- allBlocks
-                      , o2 <- allBlocks
-                      , o1 /= o2
-                      , form o1 `notElem` [Pyramid, Ball]
-                      , size o1 > size o2
-                      ]
-    mapM_ tellSmaller smallerThan
+            line ";; Objects which are _in_ other objects."
+            tellIn initial
+        line ")"
 
-    tellLn "\n    ;; Objects which are on other objects."
-    let isOnFun      = map toPair . nGrams 2 . map name . reverse
-        nGrams n     = takeWhile ((==n) . length) . map (take n) . iterate (drop 1)
-        toPair [a,b] = (a,b)
-        isOn         = concatMap isOnFun ws
-    forM_ isOn $ \(o1, o2) ->
-        tellLn $ "    (on " ++ o1 ++ " " ++ o2 ++ ")"
-
-    tellLn "\n    ;; Objects which are in other objects."
-    -- FIXME: What to do if there are multiple boxes? Currently the
-    -- outermost box is the one that counts
-    let isInFun _       []  = []
-        isInFun _       [_] = []
-        isInFun Nothing (o:rest)
-            | form o == Box = isInFun (Just o) rest
-            | otherwise     = isInFun Nothing rest
-        isInFun (Just b) (o:rest)
-            | form o == Box = p : isInFun (Just o) rest
-            | otherwise     = p : isInFun (Just b) rest
-          where p = (name b, name o)
-        isIn = concatMap (isInFun Nothing) ws
-    forM_ isIn $ \(o1, o2) ->
-        tellLn $ "    (in " ++ o1 ++ " " ++ o2 ++ ")"
-    tellLn "  )"
-
-    tellLn "\n    ;; TODO fix goal"
-    tellLn "  (:goal"
-    tellLn "    (and"
-    tellLn "      (on a b)"
-    tellLn "      (on b c))))"
+        -- FIXME: Is this the goal or should we generate some other?
+        line "(:goal"
+        indent $ do
+            line "(and"
+            indent $ do
+                tellOn goal >> ln
+                tellIn goal
+            line ")"
+        line ")"
+    line ")"
   where
-    tellSmaller (o1,o2) = tellLn ("    (smaller " ++ o1 ++ " " ++ o2 ++ ")")
-    indent n s = replicate n ' ' ++ s
-    tellLn s = tell (s ++ "\n")
+    allBlocks = sortBy (comparing name) (nub (concat initial))
+    blocks    = map name allBlocks
+
+    tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
+    tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]
+    indentStep n = mapWriter (\(a,w) -> (a, map (replicate n ' '++) w))
+    indent = indentStep 2
+    line = tell . (:[])
+    ln   = line ""
+
+    smallerThan = [ (name o1, name o2)
+                  | o1 <- allBlocks
+                  , o2 <- allBlocks
+                  , o1 /= o2
+                  , form o1 `notElem` [Pyramid, Ball]
+                  , size o1 > size o2
+                  ]
+
+    getOn        = map listToPair . nGrams 2 . map name . reverse
+    isOnElems    = concatMap getOn
+    tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
+
+    getIn _       []  = []
+    getIn _       [_] = []
+    getIn Nothing (o:rest)
+        | form o == Box = getIn (Just o) rest
+        | otherwise     = getIn Nothing rest
+    getIn (Just b) (o:rest)
+        | form o == Box = p : getIn (Just o) rest
+        | otherwise     = p : getIn (Just b) rest
+      where p = (name b, name o)
+    -- FIXME: What to do if there are multiple boxes? Currently the
+    -- outermost box is the only one that counts.
+    isInElems = concatMap (getIn Nothing)
+    tellIn world = forM_ (isInElems world) $ \(o1, o2) -> tellSexp ["in", o1, o2]
+
 
 -- FIXME: Remove this later
 testWorld :: World
 testWorld = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
   where
+    fromJust Nothing  = error "Planner.testWorld: fromJust Nothing"
     fromJust (Just a) = a
     worldStr = ";a,b;c,d;;e,f,g,h,i;;;j,k;;l,m"
 

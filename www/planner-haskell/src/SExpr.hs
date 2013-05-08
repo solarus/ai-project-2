@@ -20,7 +20,7 @@ instance Read SExpr where
 
 readSExpr :: String -> (SExpr, String)
 readSExpr s = case parse ((,) <$> (many space *> parseSExpr) <*> many anyChar) "" s of
-    Left err -> error ("readSExpr: " ++ show err)
+    Left err -> error ("readSExpr:\ns = " ++ s ++ "\nError = " ++ show err)
     Right a  -> a
 
 parseNil :: Parser SExpr

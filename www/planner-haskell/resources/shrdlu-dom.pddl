@@ -20,10 +20,6 @@
                       (inside ?obj ?box))
    :effect       (and (holding-any)
                       (holding ?obj)
-                      (not (clear ?obj))
-                      (not (on ?obj ?col))
-                      (not (inside ?obj ?box))
-                      (not (stacked-on ?obj ?col))
                       (clear ?from)))
 
   ;; pick up object NOT in a box
@@ -32,22 +28,41 @@
    :precondition (and (not holding-any)
                       (clear ?obj)
                       (stacked-on ?obj ?col)
-                      (not (stacked-on ?obj ?obj)) ;; not the floor
+                      (not (stacked-on ?obj ?obj)) ;; not the floor col != obj
                       (on ?obj ?from))
-
-
-    )
-   :effect())
+   :effect       (and (holding-any)
+                      (holding ?obj)
+                      (clear ?from)))
 
   ;; drop an object into a box
   (:action drop-in
-   :parameters ()
-   :precondition ()
-   :effect())
+   :parameters (?obj ?to ?box ?col)
+   :precondition (and (holding ?obj)
+                      (clear ?to)
+                      (stacked-on ?to ?col)
+                      (inside ?to ?box)
+                      (smaller ?to ?obj))
+   :effect       (and (not holding-any)
+                      (not (clear ?to))
+                      (stacked-on ?obj ?col)
+                      (inside ?obj ?box)
+                      (clear ?obj)))
 
   ;; drop an object onto another object NOT in a box
   (:action drop-on
-   :parameters ()
-   :precondition ()
-   :effect())
+   :parameters (?obj ?to ?col)
+   :precondition (and (holding ?obj)
+                      (clear ?to)
+                      (stacked-on ?to ?col)
+                      (smaller ?obj ?to))
+   :effect       (and (not (holding-any))
+                      (not (clear ?to))
+                      (stacked-on ?obj ?col)
+                      (clear ?obj)))
 )
+
+
+
+
+
+

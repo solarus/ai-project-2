@@ -32,7 +32,7 @@ toPDDL :: State -> State -> String
 toPDDL initial goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
-        line "(:domain shrdlu)"
+        tellSexp [":domain", "shrdlu"]
         tellSexp (":objects" : blocks ++ floorTiles)
         line "(:init"
 

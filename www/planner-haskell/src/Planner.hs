@@ -85,7 +85,7 @@ toPDDL initial goal = unlines . execWriter $ do
 
     allBlocks = sortBy (comparing name) (nub (concat iWorld))
     blocks    = map name allBlocks
-    floorTiles = map (('f':) . show) [1..length iWorld]
+    floorTiles = map (('f':) . show) [0 .. length iWorld-1 ]
 
     tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
     tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]

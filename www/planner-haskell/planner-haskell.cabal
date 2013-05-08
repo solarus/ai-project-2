@@ -24,3 +24,4 @@ executable planner-haskell
                 , containers
                 , mtl
                 , parsec
+                , deepseq

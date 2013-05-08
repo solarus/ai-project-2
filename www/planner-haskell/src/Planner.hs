@@ -1,6 +1,5 @@
 module Planner where
 
-import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Writer
 import Data.List
@@ -58,10 +57,11 @@ findMatching w matching = formFilter . sizeFilter . colFilter $ allBlocks
     (block, mPos) = case matching of
         List (Atom "block": _)     -> (cdr matching, Nothing)
         List [Atom "thatis", b, p] -> (cdr b,        Just (cdr p))
+        _                          -> error ("Planner.findMatching: No match for " ++ show matching)
     [Atom f, Atom s, Atom c] = toList block
-    genFilter f s = case reads (capitalize s) of
-        (s', ""):_ -> filter ((==s') . f)
-        _          -> id
+    genFilter fun str = case reads (capitalize str) of
+        (str', ""):_ -> filter ((==str') . fun)
+        _            -> id
     formFilter = genFilter form f
     sizeFilter = genFilter size s
     colFilter  = genFilter color c

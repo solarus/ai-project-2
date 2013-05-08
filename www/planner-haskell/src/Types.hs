@@ -7,7 +7,9 @@ module Types
     , Block(..)
     , World
     , Tree
-    , State(..)
+    , State
+    , Goal(..)
+    , defaultGoal
     ) where
 
 -- TODO: Specialized Ord instance
@@ -39,5 +41,14 @@ type World = [[Block]]
 -- FIXME: Maybe use the Tree type in PGF instead?
 type Tree = String
 
-data State = S { getHolding :: Maybe Block, getWorld :: World }
+type State = (Maybe Block, World)
+
+data Goal = G
+    { isOn       :: [(Block, Block)]
+    , isIn       :: [(Block, Block)]
+    , getHolding :: Maybe Block
+    }
   deriving (Eq, Show)
+
+defaultGoal :: Goal
+defaultGoal = G [] [] Nothing

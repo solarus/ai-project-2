@@ -7,6 +7,7 @@ module Types
     , Block(..)
     , World
     , Tree
+    , State(..)
     ) where
 
 -- TODO: Specialized Ord instance
@@ -37,3 +38,6 @@ type World = [[Block]]
 
 -- FIXME: Maybe use the Tree type in PGF instead?
 type Tree = String
+
+data State = S { getHolding :: Maybe Block, getWorld :: World }
+  deriving (Eq, Show)

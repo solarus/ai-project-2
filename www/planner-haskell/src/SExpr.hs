@@ -38,12 +38,12 @@ parseList :: Parser SExpr
 parseList = List <$> (char '(' *> some parseSExpr <* char ')')
 
 parseSExpr :: Parser SExpr
-parseSExpr = parseAtom' <|> try parseSString' <|> try parseList' <|> parseNil'
+parseSExpr =   pad parseAtom
+           <|> try (pad parseSString)
+           <|> try (pad parseList)
+           <|> pad parseNil
   where
-    parseAtom'    = parseAtom    <* many space
-    parseSString' = parseSString <* many space
-    parseList'    = parseList    <* many space
-    parseNil'     = parseNil     <* many space
+    pad p = many space *> p <* many space
 
 -- FIXME: Stupid string parser
 parseString :: Parser String

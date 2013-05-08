@@ -18,6 +18,18 @@ instance Show SExpr where
 instance Read SExpr where
     readsPrec _ s = [readSExpr s]
 
+car :: SExpr -> SExpr
+car (List (s:_)) = s
+car _            = error "SExpr.car: Not a cons cell."
+
+cdr :: SExpr -> SExpr
+cdr (List (_:s)) = List s
+cdr _            = error "SExpr.cdr: Not a cons cell."
+
+toList :: SExpr -> [SExpr]
+toList (List ss) = ss
+toList _         = error "SExpr.toList: not a cons cell."
+
 readSExpr :: String -> (SExpr, String)
 readSExpr s = case parse ((,) <$> (many space *> parseSExpr) <*> many anyChar) "" s of
     Left err -> error ("readSExpr:\ns = " ++ s ++ "\nError = " ++ show err)

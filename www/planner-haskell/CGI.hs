@@ -1,4 +1,5 @@
 import Control.Applicative ((<$>))
+import Control.DeepSeq
 import Data.Maybe (fromMaybe, fromJust)
 import Network.CGI
 
@@ -8,10 +9,12 @@ import World
 
 cgiMain :: CGI CGIResult
 cgiMain = do
-    setHeader "Content-type" "text/plain"
     (holding, world, trees) <- cgiInput
     let plan = findPlan holding world trees
-    output (unlines plan)
+
+    plan `deepseq` do
+        setHeader "Content-type" "text/plain"
+        output (unlines plan)
 
 cgiInput :: CGI (Maybe Block, World, [Tree])
 cgiInput = do
@@ -29,4 +32,10 @@ split delim str
   where (token, rest) = span (/=delim) str
 
 main :: IO ()
-main = runCGI (handleErrors cgiMain)
+main = runCGI $ do
+    res <- tryCGI cgiMain
+    case res of
+        Left err -> do
+            setHeader "Content-type" "text/plain"
+            output $ "Got an error!\n" ++ show err
+        Right a  -> return a

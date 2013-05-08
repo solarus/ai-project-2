@@ -29,7 +29,7 @@ findPlan holding world trees =
     stacknr = 1 :: Int
 
 toPDDL :: State -> State -> String
-toPDDL initial goal = unlines . execWriter $ do
+toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
         tellSexp [":domain", "shrdlu"]
@@ -80,9 +80,6 @@ toPDDL initial goal = unlines . execWriter $ do
         line ")"
     line ")"
   where
-    iWorld = getWorld initial
-    gWorld = getWorld goal
-
     allBlocks = sortBy (comparing name) (nub (concat iWorld))
     blocks    = map name allBlocks
     floorTiles = map (('f':) . show) [0 .. length iWorld-1 ]
@@ -94,7 +91,7 @@ toPDDL initial goal = unlines . execWriter $ do
     line = tell . (:[])
     ln   = line ""
 
-    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln) . getHolding
+    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln) . fst
 
     smallerThan = [ (name o1, name o2)
                   | o1 <- allBlocks
@@ -129,7 +126,7 @@ toPDDL initial goal = unlines . execWriter $ do
 
 -- FIXME: Remove these later
 testState :: State
-testState = S Nothing testWorld
+testState = (Nothing, testWorld)
 
 testWorld :: World
 testWorld = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr

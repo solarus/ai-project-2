@@ -1,6 +1,7 @@
 module SExpr where
 
 import Control.Applicative hiding ((<|>), many)
+import Data.Char
 import Data.List
 import Text.Parsec
 import Text.Parsec.String
@@ -26,7 +27,9 @@ parseNil :: Parser SExpr
 parseNil = Nil <$ string "()"
 
 parseAtom :: Parser SExpr
-parseAtom = Atom <$> some alphaNum
+parseAtom = Atom <$> some (satisfy charOK)
+  where
+    charOK c = not (isSpace c) &&  c `notElem` "()\""
 
 parseSString :: Parser SExpr
 parseSString = SString <$> parseString

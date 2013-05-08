@@ -12,13 +12,13 @@ module Types
 
 -- TODO: Specialized Ord instance
 data Size = Small | Tall | Wide | Medium | Large
-  deriving (Eq, Show, Ord)
+  deriving (Eq, Show, Read, Ord)
 
 data Color = Black | White | Blue | Green | Yellow | Red
-  deriving (Eq, Show)
+  deriving (Eq, Show, Read)
 
 data Form = Box | Pyramid | Rectangle | Square | Ball
-  deriving (Eq, Show)
+  deriving (Eq, Show, Read)
 
 type Width  = Double
 type Height = Double

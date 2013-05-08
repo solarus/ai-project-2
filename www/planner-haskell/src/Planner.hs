@@ -28,7 +28,7 @@ findPlan holding world trees =
   where
     stacknr = 1 :: Int
 
-toPDDL :: World -> World -> String
+toPDDL :: State -> State -> String
 toPDDL initial goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
@@ -37,6 +37,8 @@ toPDDL initial goal = unlines . execWriter $ do
         line "(:init"
 
         indent $ do
+            tellHolding initial
+
             line ";; All objects are smaller than the floor tiles."
             let smallerThanFloor = [ (o, f) | o <- blocks, f <- floorTiles ]
             mapM_ tellSmaller smallerThanFloor >> ln
@@ -45,20 +47,25 @@ toPDDL initial goal = unlines . execWriter $ do
             mapM_ tellSmaller smallerThan >> ln
 
             line ";; Some objects are clear."
-            forM_ (zipWith (:) floorTiles (map (map name) initial)) $ \l ->
+            forM_ (zipWith (:) floorTiles (map (map name) iWorld)) $ \l ->
                 tellSexp ["clear", last l]
             ln
 
             line ";; Some object are boxes."
-            forM_ (map name (filter ((==Box) . form) (concat initial))) $ \b ->
+            forM_ (map name (filter ((==Box) . form) (concat iWorld))) $ \b ->
                 tellSexp ["box", b]
             ln
 
             line ";; Objects which are _on_ other objects."
-            tellOn initial >> ln
+            tellOn iWorld >> ln
 
             line ";; Objects which are _in_ other objects."
-            tellIn initial
+            tellIn iWorld >> ln
+
+            line ";; Objects are above floor tiles."
+            forM_ (zip floorTiles (map (map name) iWorld)) $ \(f, os) -> do
+                tellSexp ["above", f, f]
+                mapM_ (\o -> tellSexp ["above", o, f]) os
         line ")"
 
         -- FIXME: Is this the goal or should we generate some other?
@@ -66,15 +73,19 @@ toPDDL initial goal = unlines . execWriter $ do
         indent $ do
             line "(and"
             indent $ do
-                tellOn goal >> ln
-                tellIn goal
+                tellHolding goal
+                tellOn gWorld >> ln
+                tellIn gWorld
             line ")"
         line ")"
     line ")"
   where
-    allBlocks = sortBy (comparing name) (nub (concat initial))
+    iWorld = getWorld initial
+    gWorld = getWorld goal
+
+    allBlocks = sortBy (comparing name) (nub (concat iWorld))
     blocks    = map name allBlocks
-    floorTiles = map (('f':) . show) [1..length initial]
+    floorTiles = map (('f':) . show) [1..length iWorld]
 
     tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
     tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]
@@ -82,6 +93,8 @@ toPDDL initial goal = unlines . execWriter $ do
     indent = indentStep 2
     line = tell . (:[])
     ln   = line ""
+
+    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln) . getHolding
 
     smallerThan = [ (name o1, name o2)
                   | o1 <- allBlocks
@@ -114,7 +127,10 @@ toPDDL initial goal = unlines . execWriter $ do
         forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["in-any", o]
 
 
--- FIXME: Remove this later
+-- FIXME: Remove these later
+testState :: State
+testState = S Nothing testWorld
+
 testWorld :: World
 testWorld = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
   where

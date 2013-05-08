@@ -1,6 +1,6 @@
 
 var ParserURL = 'parser.cgi';
-var PlannerURL = 'planner-haskell/planner.hs';
+var PlannerURL = 'planner.cgi';
 
 var WorldWidth = 800;      // pixels
 var WorldHeight = 400;    // pixels

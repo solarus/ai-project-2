@@ -1,9 +1,12 @@
 module Planner where
 
+import Control.Applicative ((<$>))
+import Control.Monad.Reader
 import Control.Monad.Writer
 import Data.List
 import Data.Ord
 
+import SExpr
 import Types
 import Utils
 import World
@@ -16,17 +19,53 @@ findPlan holding world trees =
     ]
     ++
 
-    [ "# Tree " ++ show n ++ ": " ++ t
+    [ "# Tree " ++ show n ++ ": " ++ show (read t :: SExpr)
     | (n, t) <- zip [(0::Int)..] trees
     ]
     ++
 
-    [ "This is a bad move!"
-    , "pick " ++ show stacknr
-    , "drop " ++ show stacknr
-    ]
+    [ "Goal:", show goal ]
   where
-    stacknr = 1 :: Int
+    goal = runReader (findGoal trees) world
+
+findGoal :: [Tree] -> Reader World (Either String Goal)
+findGoal []     = return (Left "I can't do that Dave.")
+findGoal (t:ts) = do
+    res <- tryGoal t
+    case res of
+        Nothing -> findGoal ts
+        Just a  -> return (Right a)
+
+tryGoal :: String -> Reader World (Maybe Goal)
+tryGoal t = case action of
+    "take" -> tryTake rest
+    _      -> return Nothing
+  where
+    t' = read t
+    List (Atom action : rest) = t'
+
+tryTake :: [SExpr] -> Reader World (Maybe Goal)
+tryTake [List (Atom "the" : matching : [])] = do
+    w <- ask
+    case findMatching w matching of
+        [x] -> return (Just (defaultGoal { getHolding = Just x }))
+        _   -> return Nothing
+tryTake _ = error "Planner.tryTake: Cannot pick up more than one item!"
+
+findMatching :: World -> SExpr -> [Block]
+findMatching w matching = formFilter . sizeFilter . colFilter $ allBlocks
+  where
+    (block, mPos) = case matching of
+        List (Atom "block": _)     -> (cdr matching, Nothing)
+        List [Atom "thatis", b, p] -> (cdr b,        Just (cdr p))
+    [Atom f, Atom s, Atom c] = toList block
+    genFilter f s = case reads (capitalize s) of
+        (s', ""):_ -> filter ((==s') . f)
+        _          -> id
+    formFilter = genFilter form f
+    sizeFilter = genFilter size s
+    colFilter  = genFilter color c
+    allBlocks  = sortBy (comparing name) (nub (concat w))
 
 toPDDL :: State -> State -> String
 toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do

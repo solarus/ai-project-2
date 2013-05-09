@@ -3,6 +3,7 @@ module Planner where
 import Control.Monad.Reader
 import Control.Monad.Writer
 import Data.List
+import Data.Maybe
 import Data.Ord
 import System.IO
 import System.IO.Temp
@@ -65,12 +66,19 @@ tryGoal t = case action of
     List (Atom action : rest) = t'
 
 tryTake :: [SExpr] -> Reader World (Maybe Goal)
-tryTake [List (Atom "the" : matching : [])] = do
-    w <- ask
-    case findMatching w matching of
-        [x] -> return (Just (defaultGoal { getHolding = Just x }))
-        _   -> return Nothing
-tryTake _ = error "Planner.tryTake: Cannot pick up more than one item!"
+tryTake [List (Atom s : matching : [])]
+    | s `notElem` ["the", "any"] =
+        error "Planner.tryTake: Cannot pick up more than one item!"
+    | otherwise = do
+        w <- ask
+        case findMatching w matching of
+            xs@(_:_) | s == "any" ->
+                return (Just (defaultGoal { getHolding = xs }))
+            (x:xs) | s == "the" && null xs ->
+                return (Just (defaultGoal { getHolding = [x] }))
+            _                                              ->
+                return Nothing
+tryTake _ = error "Planner.tryTake: This should not happen!"
 
 findMatching :: World -> SExpr -> [Block]
 findMatching w matching = formFilter . sizeFilter . colFilter $ allBlocks
@@ -97,7 +105,7 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
         line "(:init"
 
         indent $ do
-            tellHolding (fst initial)
+            tellHolding (maybeToList (fst initial))
 
             line ";; All objects are smaller than the floor tiles."
             let smallerThanFloor = [ (o, f) | o <- blocks, f <- floorTiles ]
@@ -149,7 +157,10 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
     line = tell . (:[])
     ln   = line ""
 
-    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln)
+    tellHolding []  = return ()
+    tellHolding [o] = tellSexp ["holding", name o]
+    tellHolding os  = tellSexp ("or" : map tellHoldingOne os)
+      where tellHoldingOne o = unlines (execWriter (tellSexp ["holding", name o]))
 
     smallerThan = [ (name o1, name o2)
                   | o1 <- allBlocks
@@ -189,8 +200,6 @@ testState = (Nothing, testWorld)
 testWorld :: World
 testWorld = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
   where
-    fromJust Nothing  = error "Planner.testWorld: fromJust Nothing"
-    fromJust (Just a) = a
     worldStr = ";a,b;c,d;;e,f,g,h,i;;;j,k;;l,m"
 
     split :: Char -> String -> [String]

@@ -46,9 +46,9 @@ type State = (Maybe Block, World)
 data Goal = G
     { isOn       :: [(Block, Block)]
     , isIn       :: [(Block, Block)]
-    , getHolding :: Maybe Block
+    , getHolding :: [Block]
     }
   deriving (Eq, Show)
 
 defaultGoal :: Goal
-defaultGoal = G [] [] Nothing
+defaultGoal = G [] [] []

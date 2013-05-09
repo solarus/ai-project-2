@@ -35,7 +35,7 @@ findPlan holding world trees = do
             plan <- planFromFF (toPDDL (holding, world) goal)
             return $
                 [ "# Stupid Haskell planner!"
-                , "# Holding: " ++ maybe "Nothing" name holding
+                , "# Holding: " ++ maybe "Nothing" bName holding
                 , "# World: " ++ show (map (map name) world)
                 ]
                 ++
@@ -82,9 +82,14 @@ tryTake [List (Atom s : matching : [])]
                 return Nothing
 tryTake _ = error "Planner.tryTake: This should not happen!"
 
+--- tryPut [List (Atom s : matching : []] = return Nothing
+tryPut _ = return Nothing
+
+tryMove _ = return Nothing
+
 findMatching :: World -> SExpr -> [Block]
 findMatching w matching =
-    let allBlocks = sortBy (comparing name) (nub (concat w))
+    let allBlocks = getBlocks w
     in case matching of
         List (Atom "block" : rest) -> formFilter . sizeFilter . colFilter $ allBlocks
           where
@@ -105,14 +110,14 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
         tellSexp [":domain", "shrdlu"]
-        tellSexp (":objects" : blocks ++ floorTiles)
+        tellSexp (":objects" : blockNames ++ floorTiles)
         line "(:init"
 
         indent $ do
-            tellHolding (maybeToList (fst initial))
+            tellHolding (maybeToList mHolding)
 
             line ";; All objects are smaller than the floor tiles."
-            let smallerThanFloor = [ (o, f) | o <- blocks, f <- floorTiles ]
+            let smallerThanFloor = [ (o, f) | o <- blockNames, f <- floorTiles ]
             mapM_ tellSmaller smallerThanFloor >> ln
 
             line ";; Some objects are smaller than others."
@@ -124,7 +129,7 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             ln
 
             line ";; Some object are boxes."
-            forM_ (map name (filter ((==Box) . form) (concat iWorld))) $ \b ->
+            forM_ (map bName (filter ((==Box) . form) (getBlocks iWorld))) $ \b ->
                 tellSexp ["box", b]
             ln
 
@@ -153,9 +158,9 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
         line ")"
     line ")"
   where
-    allBlocks = sortBy (comparing name) (nub (maybe [] (:[]) mHolding ++ concat iWorld))
-    blocks    = map name allBlocks
-    floorTiles = map (('f':) . show) [0 .. length iWorld-1 ]
+    allBlocks = sortBy (comparing bName) (maybe [] (:[]) mHolding ++ getBlocks iWorld)
+    blockNames = map bName allBlocks
+    floorTiles = map (('f':) . show) [0 .. length iWorld-1]
 
     tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
     tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]
@@ -165,12 +170,12 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
     ln   = line ""
 
     tellHolding []  = return ()
-    tellHolding [o] = tellSexp ["holding", name o] >> tellSexp ["holding-any"]
+    tellHolding [o] = tellSexp ["holding", bName o] >> tellSexp ["holding-any"]
     tellHolding os  = tellSexp ("or" : map tellHoldingOne os) >> tellSexp ["holding-any"]
       where
-        tellHoldingOne o = unlines (execWriter (tellSexp ["holding", name o]))
+        tellHoldingOne o = unlines (execWriter (tellSexp ["holding", bName o]))
 
-    smallerThan = [ (name o1, name o2)
+    smallerThan = [ (bName o1, bName o2)
                   | o1 <- allBlocks
                   , o2 <- allBlocks
                   , o1 /= o2
@@ -183,14 +188,15 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
     getIn _       []  = []
-    getIn Nothing (o:rest)
+    getIn m       (TFloorTile _ : rest) = getIn m rest
+    getIn Nothing (TBlock o:rest)
                         -- Boxes are inside themselves
-        | form o == Box = (name o, name o) : getIn (Just o) rest
+        | form o == Box = (bName o, bName o) : getIn (Just o) rest
         | otherwise     = getIn Nothing rest
-    getIn (Just b) (o:rest)
+    getIn (Just b) (TBlock o:rest)
         | form o == Box = p : getIn (Just o) rest
         | otherwise     = p : getIn (Just b) rest
-      where p = (name b, name o)
+      where p = (bName b, bName o)
     -- FIXME: What to do if there are multiple boxes? Currently the
     -- outermost box is the only one that counts.
     isInElems = concatMap (getIn Nothing)

@@ -3,7 +3,9 @@
 domain="../planner-haskell/resources/shrdlu-dom.pddl"
 problem_file=$1
 
-ff_out=$(ff -o $domain -f $problem_file)
+pwd && exit 1
+ff_out=$(../bin/ff -o $domain -f $problem_file)
+
 
 actions=$(echo -e "$ff_out" | egrep "((PICK|DROP)-(IN|ON))")
 

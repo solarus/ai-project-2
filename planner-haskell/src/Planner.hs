@@ -2,6 +2,7 @@ module Planner where
 
 import Control.Monad.Reader
 import Control.Monad.Writer
+import Data.Function
 import Data.List
 import Data.Maybe
 import Data.Ord
@@ -134,10 +135,13 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
             line ";; Objects which are _in_ other objects."
             tellIn iWorld >> ln
 
+            line ";; Objects are above themselves."
+            tellAbove iWorld >> ln
+
             line ";; Objects are above floor tiles."
             forM_ (zip floorTiles (map (map name) iWorld)) $ \(f, os) -> do
-                tellSexp ["above", f, f]
-                mapM_ (\o -> tellSexp ["above", o, f]) os
+                tellSexp ["stacked-on", f, f]
+                mapM_ (\o -> tellSexp ["stacked-on", o, f]) os
         line ")"
 
         -- FIXME: Is this the goal or should we generate some other?
@@ -162,9 +166,10 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
     ln   = line ""
 
     tellHolding []  = return ()
-    tellHolding [o] = tellSexp ["holding", name o]
-    tellHolding os  = tellSexp ("or" : map tellHoldingOne os)
-      where tellHoldingOne o = unlines (execWriter (tellSexp ["holding", name o]))
+    tellHolding [o] = tellSexp ["holding", name o] >> tellSexp ["holding-any"]
+    tellHolding os  = tellSexp ("or" : map tellHoldingOne os) >> tellSexp ["holding-any"]
+      where
+        tellHoldingOne o = unlines (execWriter (tellSexp ["holding", name o]))
 
     smallerThan = [ (name o1, name o2)
                   | o1 <- allBlocks
@@ -193,8 +198,10 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
     tellIn world = do
         let elems = isInElems world
             pairToList (a,b) = [a,b]
-        forM_ elems $ \(o1, o2) -> tellSexp ["in", o2, o1]
-        forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["in-any", o]
+        forM_ elems $ \(o1, o2) -> tellSexp ["inside", o2, o1]
+        forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
+    tellAbove world = forM_ allBlocks $ \o -> tellSexp ["above", name o, name o]
+      where allBlocks' = nubBy ((==) `on` name) (concat world)
 
 
 -- FIXME: Remove these later

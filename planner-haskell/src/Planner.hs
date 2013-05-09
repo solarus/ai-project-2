@@ -22,7 +22,7 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
     let ff = "../bin/ff-wrapper.sh"
         args = [fp]
     (exitCode, out, err) <- readProcessWithExitCode ff args ""
-    if null
+    if null err
         then return (lines out)
         else return $ ["# Got an error!"] ++ lines err
 

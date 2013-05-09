@@ -1,5 +1,6 @@
 import Control.Applicative ((<$>))
 import Control.DeepSeq
+import Control.Monad.Trans
 import Data.Maybe (fromMaybe, fromJust)
 import Network.CGI
 
@@ -10,7 +11,7 @@ import World
 cgiMain :: CGI CGIResult
 cgiMain = do
     (holding, world, trees) <- cgiInput
-    let plan = findPlan holding world trees
+    plan <- lift (findPlan holding world trees)
 
     plan `deepseq` do
         setHeader "Content-type" "text/plain"

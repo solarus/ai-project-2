@@ -69,7 +69,7 @@
                       (clear ?obj)
                       (stacked-on ?obj ?col)
                       (inside ?obj ?box)
-                      (on ?obj ?to))
+                      (on ?obj ?to)))
 
   ;; drop an object onto another object NOT in a box
   (:action drop-on

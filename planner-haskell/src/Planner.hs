@@ -65,8 +65,7 @@ tryGoal t = case action of
     "take" -> tryTake rest
     _      -> return Nothing
   where
-    t' = read t
-    List (Atom action : rest) = t'
+    List (Atom action : rest) = read t
 
 tryTake :: [SExpr] -> Reader World (Maybe Goal)
 tryTake [List (Atom s : matching : [])]

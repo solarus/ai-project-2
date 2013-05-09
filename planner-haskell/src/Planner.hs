@@ -26,7 +26,7 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
 findPlan :: Maybe Block -> World -> [Tree] -> IO [String]
 findPlan holding world trees = do
     case eGoal of
-        Left err   -> return ["# Couldn't find a plan!", "# " ++ err ]
+        Left err   -> return ["# Couldn't find a plan!", "# Error message: " ++ err ]
         Right goal -> do
             plan <- planFromFF (toPDDL (holding, world) goal)
             return $

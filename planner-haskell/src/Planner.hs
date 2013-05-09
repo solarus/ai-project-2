@@ -6,6 +6,7 @@ import Data.Function
 import Data.List
 import Data.Maybe
 import Data.Ord
+import System.Exit
 import System.IO
 import System.IO.Temp
 import System.Process
@@ -22,9 +23,9 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
     let ff = "../bin/ff-wrapper.sh"
         args = [fp]
     (exitCode, out, err) <- readProcessWithExitCode ff args ""
-    if null err
+    if exitCode == ExitSuccess
         then return (lines out)
-        else return $ ["# Got an error!"] ++ lines err
+        else return $ ["# Got an error!"] ++ map ("# "++) (lines out ++ lines err)
 
 findPlan :: Maybe Block -> World -> [Tree] -> IO [String]
 findPlan holding world trees = do

@@ -81,20 +81,22 @@ tryTake [List (Atom s : matching : [])]
 tryTake _ = error "Planner.tryTake: This should not happen!"
 
 findMatching :: World -> SExpr -> [Block]
-findMatching w matching = formFilter . sizeFilter . colFilter $ allBlocks
-  where
-    (block, mPos) = case matching of
-        List (Atom "block": _)     -> (cdr matching, Nothing)
-        List [Atom "thatis", b, p] -> (cdr b,        Just (cdr p))
-        _                          -> error ("Planner.findMatching: No match for " ++ show matching)
-    [Atom f, Atom s, Atom c] = toList block
-    genFilter fun str = case reads (capitalize str) of
-        (str', ""):_ -> filter ((==str') . fun)
-        _            -> id
-    formFilter = genFilter form f
-    sizeFilter = genFilter size s
-    colFilter  = genFilter color c
-    allBlocks  = sortBy (comparing name) (nub (concat w))
+findMatching w matching =
+    let allBlocks = sortBy (comparing name) (nub (concat w))
+    in case matching of
+        List (Atom "block" : rest) -> formFilter . sizeFilter . colFilter $ allBlocks
+          where
+            [Atom f, Atom s, Atom c] = rest
+            genFilter fun str = case reads (capitalize str) of
+                (str', ""):_ -> filter ((==str') . fun)
+                _            -> id
+            formFilter = genFilter form f
+            sizeFilter = genFilter size s
+            colFilter  = genFilter color c
+        List [Atom "thatis", b, _p] -> posFilter blocks
+          where
+            blocks = findMatching w b
+            posFilter = id
 
 toPDDL :: State -> Goal -> String
 toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do

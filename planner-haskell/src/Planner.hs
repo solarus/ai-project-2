@@ -22,7 +22,9 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
         args = ["-o", domFile, "-f", fp]
         domFile = "../planner-haskell/resources/shrdlu-dom.pddl"
     (_exitCode, out, err) <- readProcessWithExitCode ff args ""
-    return $ lines out ++ lines err
+    if null err
+        then return (lines out ++ lines problem)
+        else return $ ["# Got an error!"] ++ lines err
 
 findPlan :: Maybe Block -> World -> [Tree] -> IO [String]
 findPlan holding world trees = do

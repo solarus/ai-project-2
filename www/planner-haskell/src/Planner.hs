@@ -67,8 +67,8 @@ findMatching w matching = formFilter . sizeFilter . colFilter $ allBlocks
     colFilter  = genFilter color c
     allBlocks  = sortBy (comparing name) (nub (concat w))
 
-toPDDL :: State -> State -> String
-toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do
+toPDDL :: State -> Goal -> String
+toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
         tellSexp [":domain", "shrdlu"]
@@ -76,7 +76,7 @@ toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do
         line "(:init"
 
         indent $ do
-            tellHolding initial
+            tellHolding (fst initial)
 
             line ";; All objects are smaller than the floor tiles."
             let smallerThanFloor = [ (o, f) | o <- blocks, f <- floorTiles ]
@@ -112,9 +112,7 @@ toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do
         indent $ do
             line "(and"
             indent $ do
-                tellHolding goal
-                tellOn gWorld >> ln
-                tellIn gWorld
+                tellHolding (getHolding goal)
             line ")"
         line ")"
     line ")"
@@ -130,7 +128,7 @@ toPDDL initial@(_, iWorld) goal@(_, gWorld) = unlines . execWriter $ do
     line = tell . (:[])
     ln   = line ""
 
-    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln) . fst
+    tellHolding = maybe (return ()) (\o -> tellSexp ["holding", name o] >> ln)
 
     smallerThan = [ (name o1, name o2)
                   | o1 <- allBlocks

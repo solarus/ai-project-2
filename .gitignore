@@ -1,8 +1,8 @@
 *.gfo
-www/planner-haskell/dist
-www/planner-haskell/cabal-dev
-www/planner-haskell/planner
-www/planner-haskell/planner.hi
-www/planner-haskell/planner.o
+planner-haskell/dist
+planner-haskell/cabal-dev
+planner-haskell/planner
+planner-haskell/planner.hi
+planner-haskell/planner.o
 ff
 .DS_Store

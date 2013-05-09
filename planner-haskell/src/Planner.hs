@@ -19,7 +19,7 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
     hClose h
     let ff = "../bin/ff"
         args = ["-o", domFile, "-f", fp]
-        domFile = "planner-haskell/resources/shrdlu-dom.pddl"
+        domFile = "../planner-haskell/resources/shrdlu-dom.pddl"
     (_exitCode, out, err) <- readProcessWithExitCode ff args ""
     return $ lines out ++ lines err
 

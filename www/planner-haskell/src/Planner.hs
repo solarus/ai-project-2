@@ -4,28 +4,49 @@ import Control.Monad.Reader
 import Control.Monad.Writer
 import Data.List
 import Data.Ord
+import System.IO
+import System.IO.Temp
+import System.Process
 
 import SExpr
 import Types
 import Utils
 import World
 
-findPlan :: Maybe Block -> World -> [Tree] -> [String]
-findPlan holding world trees =
-    [ "# Stupid Haskell planner!"
-    , "# Holding: " ++ maybe "Nothing" name holding
-    , "# World: " ++ show (map (map name) world)
-    ]
-    ++
+planFromFF :: String -> IO [String]
+planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
+    hPutStr h problem
+    hClose h
+    let ff = "../bin/ff"
+        args = ["-o", domFile, "-f", fp]
+        domFile = "planner-haskell/resources/shrdlu-dom.pddl"
+    (_exitCode, out, err) <- readProcessWithExitCode ff args ""
+    return $ lines out ++ lines err
 
-    [ "# Tree " ++ show n ++ ": " ++ show (read t :: SExpr)
-    | (n, t) <- zip [(0::Int)..] trees
-    ]
-    ++
+findPlan :: Maybe Block -> World -> [Tree] -> IO [String]
+findPlan holding world trees = do
+    case eGoal of
+        Left err   -> return ["# Couldn't find a plan!", "# " ++ err ]
+        Right goal -> do
+            plan <- planFromFF (toPDDL (holding, world) goal)
+            return $
+                [ "# Stupid Haskell planner!"
+                , "# Holding: " ++ maybe "Nothing" name holding
+                , "# World: " ++ show (map (map name) world)
+                ]
+                ++
 
-    [ "Goal:", show goal ]
+                [ "# Tree " ++ show n ++ ": " ++ show (read t :: SExpr)
+                | (n, t) <- zip [(0::Int)..] trees
+                ]
+                ++
+
+                [ "# Goal:", "# " ++ show goal ]
+                ++
+
+                plan
   where
-    goal = runReader (findGoal trees) world
+    eGoal = runReader (findGoal trees) world
 
 findGoal :: [Tree] -> Reader World (Either String Goal)
 findGoal []     = return (Left "I can't do that Dave.")

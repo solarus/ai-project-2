@@ -101,7 +101,7 @@ findMatching w matching =
             posFilter = id
 
 toPDDL :: State -> Goal -> String
-toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
+toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
     line "(define (problem shrdlu)"
     indent $ do
         tellSexp [":domain", "shrdlu"]
@@ -153,7 +153,7 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
         line ")"
     line ")"
   where
-    allBlocks = sortBy (comparing name) (nub (concat iWorld))
+    allBlocks = sortBy (comparing name) (nub (maybe [] (:[]) mHolding ++ concat iWorld))
     blocks    = map name allBlocks
     floorTiles = map (('f':) . show) [0 .. length iWorld-1 ]
 
@@ -174,7 +174,7 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
                   | o1 <- allBlocks
                   , o2 <- allBlocks
                   , o1 /= o2
-                  , form o1 `notElem` [Pyramid, Ball]
+                  , form o2 `notElem` [Pyramid, Ball]
                   , size o1 <= size o2
                   ]
 
@@ -199,7 +199,7 @@ toPDDL initial@(_, iWorld) goal = unlines . execWriter $ do
             pairToList (a,b) = [a,b]
         forM_ elems $ \(o1, o2) -> tellSexp ["inside", o2, o1]
         forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
-    tellAbove world = forM_ allBlocks $ \o -> tellSexp ["above", name o, name o]
+    tellAbove world = forM_ allBlocks' $ \o -> tellSexp ["above", name o, name o]
       where allBlocks' = nubBy ((==) `on` name) (concat world)
 
 

@@ -18,10 +18,12 @@ instance Show SExpr where
 instance Read SExpr where
     readsPrec _ s = [readSExpr s]
 
+-- head, works only on List
 car :: SExpr -> SExpr
 car (List (s:_)) = s
 car _            = error "SExpr.car: Not a cons cell."
 
+-- tail, works only on List
 cdr :: SExpr -> SExpr
 cdr (List (_:s)) = List s
 cdr _            = error "SExpr.cdr: Not a cons cell."
@@ -50,10 +52,10 @@ parseList :: Parser SExpr
 parseList = List <$> (char '(' *> some parseSExpr <* char ')')
 
 parseSExpr :: Parser SExpr
-parseSExpr =   pad parseAtom
-           <|> try (pad parseSString)
-           <|> try (pad parseList)
-           <|> pad parseNil
+parseSExpr =  pad parseAtom
+          <|> try (pad parseSString)
+          <|> try (pad parseList)
+          <|> pad parseNil
   where
     pad p = many space *> p <* many space
 

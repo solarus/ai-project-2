@@ -10,4 +10,5 @@ listToPair [a,b] = (a,b)
 listToPair _     = error "Utils.listToPair: Need to be exactly two elements in the list"
 
 capitalize :: String -> String
+capitalize ""     = ""
 capitalize (c:cs) = toUpper c : cs

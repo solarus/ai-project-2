@@ -19,12 +19,11 @@ planFromFF :: String -> IO [String]
 planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
     hPutStr h problem
     hClose h
-    let ff = "../bin/ff"
-        args = ["-o", domFile, "-f", fp]
-        domFile = "../planner-haskell/resources/shrdlu-dom.pddl"
-    (_exitCode, out, err) <- readProcessWithExitCode ff args ""
-    if null err
-        then return (lines out ++ lines problem)
+    let ff = "../bin/ff-wrapper.sh"
+        args = [fp]
+    (exitCode, out, err) <- readProcessWithExitCode ff args ""
+    if null
+        then return (lines out)
         else return $ ["# Got an error!"] ++ lines err
 
 findPlan :: Maybe Block -> World -> [Tree] -> IO [String]

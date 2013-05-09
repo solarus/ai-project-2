@@ -3,7 +3,6 @@
 domain="../planner-haskell/resources/shrdlu-dom.pddl"
 problem_file=$1
 
-pwd && exit 1
 ff_out=$(../bin/ff -o $domain -f $problem_file)
 
 

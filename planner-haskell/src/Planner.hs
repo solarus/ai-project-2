@@ -85,7 +85,8 @@ tryTake _ = error "Planner.tryTake: This should not happen!"
 --- tryPut [List (Atom s : matching : []] = return Nothing
 tryPut _ = return Nothing
 
-tryMove _ = return Nothing
+tryMove :: [SExpr] -> Reader World (Maybe Goal)
+tryMove = undefined
 
 findMatching :: World -> SExpr -> [Block]
 findMatching w matching =

@@ -1,19 +1,21 @@
 (define (domain shrdlu)
-  (:requirements :stripes)
+  (:requirements :strips :equality :adl)
 
-  (predicates (clear ?x)          ;; 'x' is top-most block
-              (on ?x ?y)          ;; 'x' is on top of 'y'
-              (inside ?x ?y)      ;; 'x' is inside box 'y'
-              (smaller ?x ?y)     ;; 'x' is smaller than 'y'
-              (stacked-on ?x ?c)  ;; 'x' is stacked on column 'c'
-              (holding-any)       ;; the arm is holding something
-              (holding ?x))       ;; 'x' is up in the air
+  (:predicates (clear ?x)          ;; 'x' is top-most block
+               (on ?x ?y)          ;; 'x' is on top of 'y'
+               (box ?x)            ;; 'x' is a box
+               (inside ?x ?y)      ;; 'x' is inside box 'y'
+               (smaller ?x ?y)     ;; 'x' is smaller than 'y'
+               (stacked-on ?x ?c)  ;; 'x' is stacked on column 'c'
+               (holding-any)       ;; the arm is holding something
+               (holding ?x))       ;; 'x' is up in the air
 
   ;; pick up object that is in a box
   (:action pick-in
    :parameters   (?obj ?from ?box ?col)
-   :precondition (and (not holding-any)
+   :precondition (and (not (holding-any))
                       (clear ?obj)
+                      (box ?box)
                       (stacked-on ?obj ?col)
                       (not (stacked-on ?obj ?obj)) ;; not the floor
                       (on ?obj ?from)
@@ -25,7 +27,7 @@
   ;; pick up object NOT in a box
   (:action pick-on
    :parameters (?obj ?from ?col)
-   :precondition (and (not holding-any)
+   :precondition (and (not (holding-any))
                       (clear ?obj)
                       (stacked-on ?obj ?col)
                       (not (stacked-on ?obj ?obj)) ;; not the floor col != obj
@@ -42,10 +44,11 @@
                       (stacked-on ?to ?col)
                       (inside ?to ?box)
                       (smaller ?to ?obj))
-   :effect       (and (not holding-any)
+   :effect       (and (not (holding-any))
                       (not (clear ?to))
                       (stacked-on ?obj ?col)
                       (inside ?obj ?box)
+                      (on ?obj ?to)
                       (clear ?obj)))
 
   ;; drop an object onto another object NOT in a box
@@ -58,6 +61,7 @@
    :effect       (and (not (holding-any))
                       (not (clear ?to))
                       (stacked-on ?obj ?col)
+                      (on ?obj ?to)
                       (clear ?obj)))
 )
 

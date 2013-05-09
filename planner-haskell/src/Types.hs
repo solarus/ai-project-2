@@ -4,12 +4,15 @@ module Types
     , Form(..)
     , Width
     , Height
+    , Thing(..)
     , Block(..)
     , World
     , Tree
     , State
     , Goal(..)
     , defaultGoal
+    , getBlocks
+    , name
     ) where
 
 -- TODO: Specialized Ord instance
@@ -25,9 +28,12 @@ data Form = Box | Pyramid | Rectangle | Square | Ball
 type Width  = Double
 type Height = Double
 
+data Thing = TFloorTile String | TBlock Block
+  deriving (Eq, Show)
+
 -- TODO: Ord instance based on size?
 data Block = Block
-    { name :: String
+    { bName :: String
     , form :: Form
     , size :: Size
     , color :: Color
@@ -36,7 +42,11 @@ data Block = Block
     }
   deriving (Eq, Show)
 
-type World = [[Block]]
+name :: Thing -> String
+name (TFloorTile n) = n
+name (TBlock b)     = bName b
+
+type World = [[Thing]]
 
 -- FIXME: Maybe use the Tree type in PGF instead?
 type Tree = String
@@ -52,3 +62,6 @@ data Goal = G
 
 defaultGoal :: Goal
 defaultGoal = G [] [] []
+
+getBlocks :: World -> [Block]
+getBlocks w = [ b | TBlock b <- concat w ]

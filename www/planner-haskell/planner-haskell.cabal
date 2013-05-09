@@ -25,3 +25,5 @@ executable planner-haskell
                 , mtl
                 , parsec
                 , deepseq
+                , process
+                , temporary

@@ -10,7 +10,7 @@ var BoxThickness = 0.1;// relative to stack width
 var BoxSpacing = 4;   // pixels
 var ArmSpeed = 500;  // pixels per second
 var AnimationPause = 0.1; // seconds
-var AjaxTimeout = 2;     // seconds
+var AjaxTimeout = 5;     // seconds
 
 var Pick = 'pick';
 var Drop = 'drop';

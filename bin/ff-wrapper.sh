@@ -5,6 +5,12 @@ problem_file=$1
 
 ff_out=$(../bin/ff -o $domain -f $problem_file)
 
+case $ff_out in
+    *"goal can be simplified to FALSE"*)
+        echo "Goal can be simplifiead to FALSE!"
+        exit 1
+        ;;
+esac
 
 actions=$(echo -e "$ff_out" | egrep "((PICK|DROP)-(IN|ON))")
 

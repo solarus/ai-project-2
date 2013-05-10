@@ -6,7 +6,7 @@ import Data.List
 import Text.Parsec
 import Text.Parsec.String
 
-data SExpr = Nil | Atom String | SString String | List [SExpr]
+data SExpr = Nil | Atom String | SString String | List [SExpr] | Comment String
   deriving (Eq)
 
 instance Show SExpr where
@@ -14,6 +14,7 @@ instance Show SExpr where
     show (Atom s)    = s
     show (SString s) = "\"" ++  s ++ "\""
     show (List ss)   = "(" ++ intercalate " " (map show ss) ++ ")"
+    show (Comment s) = "\n;" ++ s ++ "\n"
 
 instance Read SExpr where
     readsPrec _ s = [readSExpr s]
@@ -40,6 +41,9 @@ readSExpr s = case parse ((,) <$> (many space *> parseSExpr) <*> many anyChar) "
 parseNil :: Parser SExpr
 parseNil = Nil <$ string "()"
 
+parseComment :: Parser SExpr
+parseComment = Comment <$> (string ";" *> manyTill anyChar (char '\n'))
+
 parseAtom :: Parser SExpr
 parseAtom = Atom <$> some (satisfy charOK)
   where
@@ -52,7 +56,8 @@ parseList :: Parser SExpr
 parseList = List <$> (char '(' *> some parseSExpr <* char ')')
 
 parseSExpr :: Parser SExpr
-parseSExpr =  pad parseAtom
+parseSExpr =  pad parseComment
+          <|> pad parseAtom
           <|> try (pad parseSString)
           <|> try (pad parseList)
           <|> pad parseNil

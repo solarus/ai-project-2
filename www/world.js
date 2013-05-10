@@ -17,12 +17,21 @@ blocks = {
     "m": { "form":"ball",      "size":"medium", "color":"blue",   "width":0.75, "height":0.75 }
 };
 
-systemprompt = "What can I do for you today?";
+systemprompt = "Hellå eller! What can I do for you today?";
 parserfailure = "I'm sorry, I didn't understand that.";
 
 inputexamples = [
     "Put the blue block that is to the left of a pyramid in a medium-sized box.",
     "Move all blocks inside a box on top of the red square.",
     "Put the wide blue block under the black rectangle.",
-    "Move all wide rectangles into a red box."
+    "Move all wide rectangles into a red box.",
+
+    "--- From the AI page ---",
+    "Pick up a big red block.",
+    "Grasp the pyramid.",
+    "Put it in the box.",
+    "Move the green ball on the floor inside the box.",
+    "Put the white square under a ball.",
+    "Put the ball that is to the left of a pyramid inside the box.",
+    "Take the ball and put it in the box."
 ];

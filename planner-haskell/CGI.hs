@@ -10,21 +10,21 @@ import World
 
 cgiMain :: CGI CGIResult
 cgiMain = do
-    (holding, world, trees) <- cgiInput
-    plan <- lift (findPlan holding world trees)
+    (state, trees) <- cgiInput
+    plan <- lift (findPlan state trees)
 
     plan `deepseq` do
         setHeader "Content-type" "text/plain"
         output (unlines plan)
 
-cgiInput :: CGI (Maybe Block, World, [Tree])
+cgiInput :: CGI (State, [Tree])
 cgiInput = do
     holding <- maybe Nothing getBlock <$> getInput "holding"
     worldStr <- fromMaybe "" <$> getInput "world"
     let world = strToWorld worldStr
     treesStr <- fromMaybe "" <$> getInput "trees"
     let trees = split ';' treesStr
-    return (holding, world, trees)
+    return ((holding, world), trees)
 
 split :: Char -> String -> [String]
 split delim str

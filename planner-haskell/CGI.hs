@@ -1,7 +1,7 @@
 import Control.Applicative ((<$>))
 import Control.DeepSeq
 import Control.Monad.Trans
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Maybe (fromMaybe)
 import Network.CGI
 
 import Planner
@@ -21,7 +21,7 @@ cgiInput :: CGI (Maybe Block, World, [Tree])
 cgiInput = do
     holding <- maybe Nothing getBlock <$> getInput "holding"
     worldStr <- fromMaybe "" <$> getInput "world"
-    let world = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
+    let world = strToWorld worldStr
     treesStr <- fromMaybe "" <$> getInput "trees"
     let trees = split ';' treesStr
     return (holding, world, trees)

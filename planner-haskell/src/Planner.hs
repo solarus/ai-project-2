@@ -212,15 +212,6 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
 -- FIXME: perhaps remove these later
 ------------------------------------
 
-strToWorld :: String -> World
-strToWorld worldStr = map (map (fromJust . getBlock) . split ',') . split ';' $ worldStr
-  where
-    split :: Char -> String -> [String]
-    split delim str
-        | rest == "" = if null token then [] else [token]
-        | otherwise  = token : split delim (tail rest)
-      where (token, rest) = span (/=delim) str
-
 testState :: State
 testState = (Nothing, testWorld)
 

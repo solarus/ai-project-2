@@ -1,9 +1,11 @@
 module World
     ( getBlock
+    , strToWorld
     ) where
 
 import           Data.Map (Map)
 import qualified Data.Map as M
+import           Data.Maybe (fromJust)
 import           Types
 
 getBlock :: String -> Maybe Block
@@ -25,3 +27,13 @@ blocks = M.fromList . map (\x -> (bName x, x)) $
     , Block { bName = "l", form = Box,       size = Medium, color = Red,    width = 0.75, height = 0.50 }
     , Block { bName = "m", form = Ball,      size = Medium, color = Blue,   width = 0.75, height = 0.75 }
     ]
+
+strToWorld :: String -> World
+strToWorld worldStr = map makeCol . zip [0..] . split ';' $ worldStr
+  where
+    makeCol (n,cs) = TFloorTile ("f" ++ show n) : map (TBlock . fromJust . getBlock) (split ','cs)
+    split :: Char -> String -> [String]
+    split delim str
+        | rest == "" = if null token then [] else [token]
+        | otherwise  = token : split delim (tail rest)
+      where (token, rest) = span (/=delim) str

@@ -69,14 +69,14 @@ tryGoal t = case action of
     List (Atom action : rest) = read t
 
 tryPut :: [SExpr] -> Reader State (Maybe Goal)
-tryPut [List [Atom place, matching]] = do
-    (h,w) <- ask
-    case h of
-      Nothing ->
-        error "Planner.tryPut: Nothing to put!"
-    case findMatching w matching of
-        _                                              ->
-            return Nothing
+tryPut [matching] = do
+        (h,w) <- ask
+        case h of
+          Nothing ->
+            error "Planner.tryPut: Nothing to put!"
+        case findMatching w matching of
+            _ ->
+              return Nothing
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)
@@ -114,6 +114,21 @@ findMatching w matching =
           where
             blocks = findMatching w b
             posFilter = id
+        List [Atom "the", b] ->
+          case findMatching w b of
+            [x] -> [x]
+            _   -> error "findMatching: Found ambiguous the 'the' statement"
+
+        -- Waiting to be implemented:
+        List [Atom "any", b] -> undefined
+        List [Atom "all", b] -> undefined
+        List [Atom "inside", b] -> undefined
+        List [Atom "ontop", b] -> undefined
+        List [Atom "beside", b] -> undefined
+        List [Atom "leftof", b] -> undefined
+        List [Atom "rightof", b] -> undefined
+        List [Atom "above", b] -> undefined
+        List [Atom "under", b] -> undefined
 
 
 toPDDL :: State -> Goal -> String

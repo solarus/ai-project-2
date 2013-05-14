@@ -70,13 +70,12 @@ tryGoal t = case action of
 
 tryPut :: [SExpr] -> Reader State (Maybe Goal)
 tryPut [matching] = do
-        (h,w) <- ask
-        case h of
-          Nothing ->
-            error "Planner.tryPut: Nothing to put!"
-        case findThings w matching of
-            _ ->
-              return Nothing
+    (h,w) <- ask
+    case h of
+        Nothing -> error "Planner.tryPut: Nothing to put!"
+        Just h' -> case findThings w matching of
+            xs -> return (Just (defaultGoal { isIn = zip (repeat h') (map thingToBlock xs) }))
+            _  -> return Nothing
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)
@@ -118,11 +117,14 @@ findThings w matching =
           case findThings w b of
             [x] -> [x]
             _   -> error "findThings: Found ambiguous the 'the' statement"
+        List [Atom "inside", b] ->
+          case findThings w b of
+            x | x == filter ((==Box) . form . thingToBlock) x -> x
+              | otherwise  -> error "findMatching: Ambiguous block statement. Blocks can be only put in boxes."
 
-        -- Waiting to be implemented:
+        --Waiting to be implemented:
         List [Atom "any", b] -> undefined
         List [Atom "all", b] -> undefined
-        List [Atom "inside", b] -> undefined
         List [Atom "ontop", b] -> undefined
         List [Atom "beside", b] -> undefined
         List [Atom "leftof", b] -> undefined

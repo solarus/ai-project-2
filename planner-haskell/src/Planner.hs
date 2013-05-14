@@ -253,7 +253,7 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             line ")"
 
     tellGoalIsOn = tellGoalGen "on"
-    tellGoalIsIn = tellGoalGen "in" . map (second TBlock)
+    tellGoalIsIn = tellGoalGen "inside" . map (second TBlock)
 
 -- FIXME: perhaps remove these later
 ------------------------------------

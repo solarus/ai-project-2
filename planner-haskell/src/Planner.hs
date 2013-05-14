@@ -1,5 +1,6 @@
 module Planner where
 
+import Control.Arrow
 import Control.Monad.Reader
 import Control.Monad.Writer
 import Data.Function
@@ -182,6 +183,8 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             line "(and"
             indent $ do
                 tellHolding (getHolding goal)
+                tellGoalIsOn (isOn goal)
+                tellGoalIsIn (isIn goal)
             line ")"
         line ")"
     line ")"
@@ -236,6 +239,21 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
         forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
     tellAbove world = forM_ allBlocks' $ \o -> tellSexp ["above", name o, name o]
       where allBlocks' = nubBy ((==) `on` name) (concat world)
+
+    tellGoalGen s = mapM_ f . groupFun
+      where
+        groupFun = map ((fst . head) &&& map snd)
+                 . groupBy ((==) `on` (bName . fst))
+                 . sortBy (comparing (bName . fst))
+        f (_   ,  []) = error "toPDDL.tellGoalIsOn: This should not happen!"
+        f (from, [x]) = tellSexp [s, bName from, name x]
+        f (from,  xs) = do
+            line "(or"
+            indent $ mapM_ (\to -> tellSexp [s, bName from, name to]) xs
+            line ")"
+
+    tellGoalIsOn = tellGoalGen "on"
+    tellGoalIsIn = tellGoalGen "in" . map (second TBlock)
 
 -- FIXME: perhaps remove these later
 ------------------------------------

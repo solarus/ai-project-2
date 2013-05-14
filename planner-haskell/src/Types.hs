@@ -55,7 +55,7 @@ type Tree = String
 type State = (Maybe Block, World)
 
 data Goal = G
-    { isOn       :: [(Block, Block)]
+    { isOn       :: [(Block, Thing)]
     , isIn       :: [(Block, Block)]
     , getHolding :: [Block]
     }

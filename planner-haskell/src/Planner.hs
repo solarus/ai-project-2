@@ -25,7 +25,7 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
         args = [fp]
     (exitCode, out, err) <- readProcessWithExitCode ff args ""
     if exitCode == ExitSuccess
-        then return (lines out)
+        then return (lines out ++ map ("# "++ ) (lines problem))
         else return $ ["# Got an error!"] ++ map ("# "++) (lines out ++ lines err)
 
 findPlan :: State -> [Tree] -> IO [String]

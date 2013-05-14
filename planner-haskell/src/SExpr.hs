@@ -47,7 +47,7 @@ parseComment = Comment <$> (string ";" *> manyTill anyChar (char '\n'))
 parseAtom :: Parser SExpr
 parseAtom = Atom <$> some (satisfy charOK)
   where
-    charOK c = not (isSpace c) &&  c `notElem` "()\""
+    charOK c = not (isSpace c) &&  c `notElem` "();\""
 
 parseSString :: Parser SExpr
 parseSString = SString <$> parseString
@@ -56,7 +56,7 @@ parseList :: Parser SExpr
 parseList = List <$> (char '(' *> some parseSExpr <* char ')')
 
 parseSExpr :: Parser SExpr
-parseSExpr =  pad parseComment
+parseSExpr =  try (pad parseComment)
           <|> pad parseAtom
           <|> try (pad parseSString)
           <|> try (pad parseList)

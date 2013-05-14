@@ -13,6 +13,7 @@ module Types
     , defaultGoal
     , getBlocks
     , name
+    , thingToBlock
     ) where
 
 -- TODO: Specialized Ord instance
@@ -65,3 +66,7 @@ defaultGoal = G [] [] []
 
 getBlocks :: World -> [Block]
 getBlocks w = [ b | TBlock b <- concat w ]
+
+thingToBlock :: Thing -> Block
+thingToBlock (TBlock b) = b
+thingToBlock _          = error "thingToBlock: TODO maybe have a maybe type here instead (pun not intended)"

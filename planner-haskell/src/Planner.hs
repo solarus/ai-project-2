@@ -124,14 +124,14 @@ findThings w matching =
               | otherwise  -> error "findMatching: Ambiguous block statement. Blocks can be only put in boxes."
 
         --Waiting to be implemented:
-        List [Atom "any", b] -> undefined
-        List [Atom "all", b] -> undefined
-        List [Atom "ontop", b] -> undefined
-        List [Atom "beside", b] -> undefined
-        List [Atom "leftof", b] -> undefined
-        List [Atom "rightof", b] -> undefined
-        List [Atom "above", b] -> undefined
-        List [Atom "under", b] -> undefined
+        List [Atom "any"     , b] -> error "TODO findThings: any"
+        List [Atom "all"     , b] -> error "TODO findThings: all"
+        List [Atom "ontop"   , b] -> error "TODO findThings: ontop"
+        List [Atom "beside"  , b] -> error "TODO findThings: beside"
+        List [Atom "leftof"  , b] -> error "TODO findThings: leftof"
+        List [Atom "rightof" , b] -> error "TODO findThings: rightof"
+        List [Atom "above"   , b] -> error "TODO findThings: above"
+        List [Atom "under"   , b] -> error "TODO findThings: under"
 
 
 toPDDL :: State -> Goal -> String

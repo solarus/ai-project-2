@@ -74,7 +74,7 @@ tryPut [matching] = do
         case h of
           Nothing ->
             error "Planner.tryPut: Nothing to put!"
-        case findMatching w matching of
+        case findThings w matching of
             _ ->
               return Nothing
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
@@ -88,20 +88,20 @@ tryTake [List (Atom s : matching : [])]
         error "Planner.tryTake: Cannot pick up more than one item!"
     | otherwise = do
         (_,w) <- ask
-        case findMatching w matching of
-            xs@(_:_) | s == "any" ->
-                return (Just (defaultGoal { getHolding = xs }))
-            (x:xs) | s == "the" && null xs ->
-                return (Just (defaultGoal { getHolding = [x] }))
-            _                                              ->
+        case findThings w matching of
+            xs@(_:_) | s == "any"            ->
+                return (Just (defaultGoal { getHolding = map thingToBlock xs }))
+            (x:xs)   | s == "the" && null xs ->
+                return (Just (defaultGoal { getHolding = [thingToBlock x] }))
+            _                                ->
                 return Nothing
 tryTake _ = error "Planner.tryTake: This should not happen!"
 
-findMatching :: World -> SExpr -> [Block]
-findMatching w matching =
+findThings :: World -> SExpr -> [Thing]
+findThings w matching =
     let allBlocks = getBlocks w
     in case matching of
-        List (Atom "block" : rest) -> formFilter . sizeFilter . colFilter $ allBlocks
+        List (Atom "block" : rest) -> map TBlock . formFilter . sizeFilter . colFilter $ allBlocks
           where
             [Atom f, Atom s, Atom c] = rest
             genFilter fun str = case reads (capitalize str) of
@@ -112,12 +112,12 @@ findMatching w matching =
             colFilter  = genFilter color c
         List [Atom "thatis", b, _p] -> posFilter blocks
           where
-            blocks = findMatching w b
+            blocks = findThings w b
             posFilter = id
         List [Atom "the", b] ->
-          case findMatching w b of
+          case findThings w b of
             [x] -> [x]
-            _   -> error "findMatching: Found ambiguous the 'the' statement"
+            _   -> error "findThings: Found ambiguous the 'the' statement"
 
         -- Waiting to be implemented:
         List [Atom "any", b] -> undefined

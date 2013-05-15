@@ -6,3 +6,5 @@ planner-haskell/planner.hi
 planner-haskell/planner.o
 ff
 .DS_Store
+*.sublime-project
+*.sublime-workspace

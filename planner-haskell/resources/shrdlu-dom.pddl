@@ -11,7 +11,8 @@
                (holding-any)       ;; the arm is holding something
                (holding ?x)        ;; 'x' is up in the air
                (frozen)            ;; cant move anything after that
-               (above ?x ?y))      ;; 'y' is somewhere under 'x'
+               (above ?x ?y)       ;; 'x' is somewhere above 'y'
+               (under ?x ?y))      ;; 'x' is somewhere under 'y'
 
   ;; pick up object that is in a box
   (:action pick-in
@@ -98,4 +99,12 @@
    :effect       (and (above ?first ?second)
                       (above ?first ?under)
                       (frozen)))
+
+  ;;
+  (:action set-under
+   :parameters (?first ?second ?above)
+   :precondition (and (on ?second ?first)
+                      (under ?second ?above))
+   :effect       (and (under ?first ?second)
+                      (under ?first ?above)))
 )

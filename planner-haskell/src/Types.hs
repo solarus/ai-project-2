@@ -6,12 +6,15 @@ module Types
     , Height
     , Thing(..)
     , Block(..)
+    , Col
     , World
     , Tree
     , State
     , Goal(..)
     , defaultGoal
+    , isFloorTile
     , getBlocks
+    , getFloorTiles
     , name
     , thingToBlock
     ) where
@@ -47,7 +50,9 @@ name :: Thing -> String
 name (TFloorTile n) = n
 name (TBlock b)     = bName b
 
-type World = [[Thing]]
+type Col = Int
+
+type World = [(Col, [Thing])]
 
 -- FIXME: Maybe use the Tree type in PGF instead?
 type Tree = String
@@ -61,11 +66,20 @@ data Goal = G
     }
   deriving (Eq, Show)
 
+isFloorTile (TFloorTile _) = True
+isFloorTile _              = False
+
 defaultGoal :: Goal
 defaultGoal = G [] [] []
 
-getBlocks :: World -> [Block]
-getBlocks w = [ b | TBlock b <- concat w ]
+getThings :: World -> [(Int, Thing)]
+getThings w = [ (c,b) | (c,bs) <- w, b <- bs ]
+
+getBlocks :: World -> [(Int, Block)]
+getBlocks w = [ (c,b) | (c,bs) <- w, TBlock b <- bs ]
+
+getFloorTiles :: World -> [(Col, Thing)]
+getFloorTiles w = [ (c,f) | (c, (f:_)) <- w ]
 
 thingToBlock :: Thing -> Block
 thingToBlock (TBlock b) = b

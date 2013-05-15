@@ -3,7 +3,7 @@ module SExpr where
 import Control.Applicative hiding ((<|>), many)
 import Data.Char
 import Data.List
-import Text.Parsec
+import Text.Parsec hiding (uncons)
 import Text.Parsec.String
 
 data SExpr = Nil | Atom String | SString String | List [SExpr] | Comment String
@@ -21,13 +21,15 @@ instance Read SExpr where
 
 -- head, works only on List
 car :: SExpr -> SExpr
-car (List (s:_)) = s
-car _            = error "SExpr.car: Not a cons cell."
+car = fst . uncons
 
 -- tail, works only on List
 cdr :: SExpr -> SExpr
-cdr (List (_:s)) = List s
-cdr _            = error "SExpr.cdr: Not a cons cell."
+cdr = snd . uncons
+
+uncons :: SExpr -> (SExpr, SExpr)
+uncons (List (s:rest)) = (s, List rest)
+uncons _               = error "SExpr.uncons: Not a cons cell."
 
 toList :: SExpr -> [SExpr]
 toList (List ss) = ss

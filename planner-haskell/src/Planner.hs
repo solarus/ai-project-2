@@ -189,8 +189,8 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             line ";; Objects which are _in_ other objects."
             tellIn iWorld >> ln
 
-            line ";; Objects are above themselves."
-            tellAbove iWorld >> ln
+            line ";; Objects are above and under themselves."
+            tellAboveUnder iWorld >> ln
 
             line ";; Objects are above floor tiles."
             forM_ (zip floorTiles (map (map name . snd) iWorld)) $ \(f, os) -> do
@@ -204,8 +204,10 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             line "(and"
             indent $ do
                 tellHolding (getHolding goal)
-                tellGoalIsOn (isOn goal)
-                tellGoalIsIn (isIn goal)
+                tellGoalIsOn    (isOn goal)
+                tellGoalIsIn    (isIn goal)
+                tellGoalIsAbove (isAbove goal)
+                tellGoalIsUnder (isUnder goal)
             line ")"
         line ")"
     line ")"
@@ -258,7 +260,9 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             pairToList (a,b) = [a,b]
         forM_ elems $ \(o1, o2) -> tellSexp ["inside", o2, o1]
         forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
-    tellAbove world = forM_ allBlocks' $ \o -> tellSexp ["above", name o, name o]
+    tellAboveUnder world = forM_ allBlocks' $ \o -> do
+        tellSexp ["above", name o, name o]
+        tellSexp ["under", name o, name o]
       where allBlocks' = nubBy ((==) `on` name) (concat (map snd world))
 
     tellGoalGen s = mapM_ f . groupFun
@@ -273,8 +277,10 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             indent $ mapM_ (\to -> tellSexp [s, bName from, name to]) xs
             line ")"
 
-    tellGoalIsOn = tellGoalGen "on"
-    tellGoalIsIn = tellGoalGen "inside" . map (second TBlock)
+    tellGoalIsOn    = tellGoalGen "on"
+    tellGoalIsIn    = tellGoalGen "inside" . map (second TBlock)
+    tellGoalIsAbove = tellGoalGen "above"
+    tellGoalIsUnder = tellGoalGen "under" . map (second TBlock)
 
 -- FIXME: perhaps remove these later
 ------------------------------------

@@ -125,11 +125,15 @@ findLocations w (List [Atom loc, thingDescr]) =
     let allBlocks = getBlocks w
         things = findThings w thingDescr
     in case loc of
-        "beside"  -> let idxs = nub [ i' | (i,_) <- things, i' <- [i-1, i+1], i >= 0, i < length w ]
+        "beside"  -> let idxs = nub [i' | (i, _) <- things, i' <- [i-1, i+1], i >= 0, i < length w]
                      in concatMap (allThingsAtCol w) idxs
-        "leftof"  -> error "TODO findLocations: leftof"
-        "rightof" -> error "TODO findLocations: rightof"
-        "above"   -> error "TODO findLocations: above"
+        "leftof"  -> let idxs = nub [i' | (i, _) <- things, i' <- [0 .. i-1], i < length w]
+                     in concatMap (allThingsAtCol w) idxs
+        "rightof" -> let idxs = nub [i' | (i, _) <- things, i' <- [i+1 .. (length w) - 1], i >= 0]
+                     in concatMap (allThingsAtCol w) idxs
+        "above"   -> let colThings = [((w!!c), t) | (c, t) <- things ]
+                         cols = map (\((c, ts), t) -> (map (\t -> (c, t)) (tail (dropWhile (== t) ts)))) colThings
+                     in concat cols
         "ontop"   -> error "TODO findLocations: ontop"
         "under"   -> error "TODO findLocations: under"
         "inside"  -> error "TODO findLocations: inside"

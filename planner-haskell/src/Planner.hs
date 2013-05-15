@@ -73,21 +73,32 @@ tryGoal t = case action of
 
 tryPut :: SExpr -> Reader State (Maybe Goal)
 tryPut (List [Atom loc, thingDescr]) = do
-    (h,w) <- ask
-    case h of
+    (mh, w) <- ask
+    case mh of
         Nothing -> error "Planner.tryPut: Nothing to put!"
-        Just h' ->
+        Just h ->
             let blocks = findThings w thingDescr
-            in case loc of
+            in return $ Just $ case loc of
                 "beside"  -> error "TODO tryPut: beside"
                 "leftof"  -> error "TODO tryPut: leftof"
-                "rightof" -> error "TODO tryPut: rightof"
-                "above"   -> error "TODO tryPut: above"
-                "ontop"   -> onGoal h' blocks
-                "under"   -> error "TODO tryPut: under"
-                "inside"  -> error "TODO tryPut: inside"
+                "rightof" -> rightGoalMany w h blocks
+                "above"   -> aboveGoal h blocks
+                "ontop"   -> onGoal h blocks
+                "under"   -> underGoal h blocks
+                "inside"  -> inGoal h blocks
   where
-    onGoal h bs = return (Just (defaultGoal { isOn = zip (repeat h) (map snd bs) }))
+    goalList f h bs = zip (repeat h) (map (f . snd) bs)
+    rightGoalMany w h bs = case thingDescr of
+        Atom "floor"         -> error "You cannot put objects to the right of the floor!"
+        List [Atom "all", _] -> rightGoal w h (maximum (map fst bs))
+        _                    -> rightGoal w h (minimum (map fst bs))
+    rightGoal w h i
+        | i+1 >= length w = error $ "There is no such location!"
+        | otherwise       = defaultGoal { isAbove = goalList id h (getFloorTiles (drop (i+1) w)) }
+    aboveGoal h bs = defaultGoal { isAbove = goalList id h bs }
+    onGoal h bs    = defaultGoal { isOn = goalList id h bs }
+    underGoal h bs = defaultGoal { isUnder = goalList thingToBlock h bs }
+    inGoal h bs    = defaultGoal { isIn = goalList thingToBlock h bs }
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)

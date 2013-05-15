@@ -31,7 +31,7 @@ blocks = M.fromList . map (\x -> (bName x, x)) $
 strToWorld :: String -> World
 strToWorld worldStr = map makeCol . zip [0..] . split ';' $ worldStr
   where
-    makeCol (n,cs) = TFloorTile ("f" ++ show n) : map (TBlock . fromJust . getBlock) (split ','cs)
+    makeCol (n,cs) = (n, TFloorTile ("f" ++ show n) : map (TBlock . fromJust . getBlock) (split ','cs))
     split :: Char -> String -> [String]
     split delim str
         | rest == "" = if null token then [] else [token]

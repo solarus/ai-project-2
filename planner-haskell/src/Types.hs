@@ -63,6 +63,7 @@ data Goal = G
     { isOn       :: [(Block, Thing)]
     , isIn       :: [(Block, Block)]
     , isAbove    :: [(Block, Thing)]
+    , isUnder    :: [(Block, Block)]
     , getHolding :: [Block]
     }
   deriving (Eq, Show)
@@ -71,7 +72,7 @@ isFloorTile (TFloorTile _) = True
 isFloorTile _              = False
 
 defaultGoal :: Goal
-defaultGoal = G [] [] [] []
+defaultGoal = G [] [] [] [] []
 
 getThings :: World -> [(Int, Thing)]
 getThings w = [ (c,b) | (c,bs) <- w, b <- bs ]

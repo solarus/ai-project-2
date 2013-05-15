@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Planner where
 
 import Control.Arrow
@@ -37,7 +39,7 @@ findPlan state@(holding, world) trees = do
             return $
                 [ "# Stupid Haskell planner!"
                 , "# Holding: " ++ maybe "Nothing" bName holding
-                , "# World: " ++ show (map (map name) world)
+                , "# World: " ++ show (map (map name . snd) world)
                 ]
                 ++
 
@@ -61,78 +63,97 @@ findGoal (t:ts) = do
         Nothing -> findGoal ts
         Just a  -> return (Right a)
 
-tryGoal :: String -> Reader State (Maybe Goal)
+tryGoal :: Tree -> Reader State (Maybe Goal)
 tryGoal t = case action of
-    "take" -> tryTake rest
-    "put" -> tryPut rest
+    "take" -> tryTake (car rest)
+    "put"  -> tryPut (car rest)
     _      -> return Nothing
   where
-    List (Atom action : rest) = read t
+    (Atom action, rest) = uncons (read t)
 
-tryPut :: [SExpr] -> Reader State (Maybe Goal)
-tryPut [matching] = do
+tryPut :: SExpr -> Reader State (Maybe Goal)
+tryPut (List [Atom loc, thingDescr]) = do
     (h,w) <- ask
     case h of
         Nothing -> error "Planner.tryPut: Nothing to put!"
-        Just h' -> case findThings w matching of
-            xs -> return (Just (defaultGoal { isIn = zip (repeat h') (map thingToBlock xs) }))
-            _  -> return Nothing
+        Just h' ->
+            let blocks = findThings w thingDescr
+            in case loc of
+                "beside"  -> error "TODO tryPut: beside"
+                "leftof"  -> error "TODO tryPut: leftof"
+                "rightof" -> error "TODO tryPut: rightof"
+                "above"   -> error "TODO tryPut: above"
+                "ontop"   -> onGoal h' blocks
+                "under"   -> error "TODO tryPut: under"
+                "inside"  -> error "TODO tryPut: inside"
+  where
+    onGoal h bs = return (Just (defaultGoal { isOn = zip (repeat h) (map snd bs) }))
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)
 tryMove = undefined
 
-tryTake :: [SExpr] -> Reader State (Maybe Goal)
-tryTake [List (Atom s : matching : [])]
+tryTake :: SExpr -> Reader State (Maybe Goal)
+tryTake descr@(List [Atom s, _])
     | s `notElem` ["the", "any"] =
         error "Planner.tryTake: Cannot pick up more than one item!"
     | otherwise = do
         (_,w) <- ask
-        case findThings w matching of
-            xs@(_:_) | s == "any"            ->
-                return (Just (defaultGoal { getHolding = map thingToBlock xs }))
-            (x:xs)   | s == "the" && null xs ->
-                return (Just (defaultGoal { getHolding = [thingToBlock x] }))
-            _                                ->
-                return Nothing
-tryTake _ = error "Planner.tryTake: This should not happen!"
+        let blocks = findThings w descr
+        -- The line below crashes if there are floor tiles in `blocks'!
+        return (Just (defaultGoal { getHolding = map (thingToBlock . snd) blocks }))
+tryTake d = error ("Planner.tryTake: This should not happen!\n" ++ show d)
 
-findThings :: World -> SExpr -> [Thing]
-findThings w matching =
+allThingsAtCol :: World -> Col -> [(Col, Thing)]
+allThingsAtCol w c = map (c,) (snd (w !! c))
+
+-- | Given a location expression returns all things that matches the
+-- location description.
+findLocations :: World -> SExpr -> [(Col, Thing)]
+findLocations w (List [Atom loc, thingDescr]) =
     let allBlocks = getBlocks w
-    in case matching of
-        List (Atom "block" : rest) -> map TBlock . formFilter . sizeFilter . colFilter $ allBlocks
-          where
-            [Atom f, Atom s, Atom c] = rest
-            genFilter fun str = case reads (capitalize str) of
-                (str', ""):_ -> filter ((==str') . fun)
-                _            -> id
-            formFilter = genFilter form f
-            sizeFilter = genFilter size s
-            colFilter  = genFilter color c
-        List [Atom "thatis", b, _p] -> posFilter blocks
-          where
-            blocks = findThings w b
-            posFilter = id
-        List [Atom "the", b] ->
-          case findThings w b of
+        things = findThings w thingDescr
+    in case loc of
+        "beside"  -> let idxs = nub [ i' | (i,_) <- things, i' <- [i-1, i+1] ]
+                     in concatMap (allThingsAtCol w) idxs
+        "leftof"  -> error "TODO findLocations: leftof"
+        "rightof" -> error "TODO findLocations: rightof"
+        "above"   -> error "TODO findLocations: above"
+        "ontop"   -> error "TODO findLocations: ontop"
+        "under"   -> error "TODO findLocations: under"
+        "inside"  -> error "TODO findLocations: inside"
+        _ -> error "Planner.findLocations: This should not happen!"
+findLocations _ s = error $ "Planner.findLocations: Called with " ++ show s
+
+findBlocks :: World -> SExpr -> [(Col, Thing)]
+findBlocks w (List [Atom "thatis", blockDescr, locDescr]) = locFilter blocks
+  where
+    locFilter = id
+    blocks = findBlocks w blockDescr
+findBlocks w (List [Atom "block", Atom f, Atom s, Atom c]) =
+    map (second TBlock) . formFilter . sizeFilter . colFilter $ allBlocks
+  where
+    allBlocks = getBlocks w
+    genFilter fun str = case reads (capitalize str) of
+        (str', ""):_ -> filter ((==str') . fun . snd)
+        _            -> id
+    formFilter = genFilter form f
+    sizeFilter = genFilter size s
+    colFilter  = genFilter color c
+
+findThings :: World -> SExpr -> [(Col, Thing)]
+findThings w (Atom "floor") = getFloorTiles w
+findThings w (List [Atom s, blockDescr]) =
+    let blocks = findBlocks w blockDescr
+    in case s of
+        "the" -> case blocks of
             [x] -> [x]
-            _   -> error "findThings: Found ambiguous the 'the' statement"
-        List [Atom "inside", b] ->
-          case findThings w b of
-            x | x == filter ((==Box) . form . thingToBlock) x -> x
-              | otherwise  -> error "findMatching: Ambiguous block statement. Blocks can be only put in boxes."
-
-        --Waiting to be implemented:
-        List [Atom "any"     , b] -> error "TODO findThings: any"
-        List [Atom "all"     , b] -> error "TODO findThings: all"
-        List [Atom "ontop"   , b] -> error "TODO findThings: ontop"
-        List [Atom "beside"  , b] -> error "TODO findThings: beside"
-        List [Atom "leftof"  , b] -> error "TODO findThings: leftof"
-        List [Atom "rightof" , b] -> error "TODO findThings: rightof"
-        List [Atom "above"   , b] -> error "TODO findThings: above"
-        List [Atom "under"   , b] -> error "TODO findThings: under"
-
+            _   -> error "Planner.findThings: Found more than one block when parsing 'the' statement."
+        _     | s `elem` ["any", "all"] -- && any (isFloorTile . snd) blocks
+                -> blocks
+              | otherwise
+                -> error "Planner.findThings: Found floor tiles when looking for blocks."
+findThings _ s = error $ "Planner.findThings: Called with " ++ show s
 
 toPDDL :: State -> Goal -> String
 toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
@@ -153,12 +174,12 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             mapM_ tellSmaller smallerThan >> ln
 
             line ";; Some objects are clear."
-            forM_ (zipWith (:) floorTiles (map (map name) iWorld)) $ \l ->
+            forM_ (zipWith (:) floorTiles (map (map name) (map snd iWorld))) $ \l ->
                 tellSexp ["clear", last l]
             ln
 
             line ";; Some object are boxes."
-            forM_ (map bName (filter ((==Box) . form) (getBlocks iWorld))) $ \b ->
+            forM_ (map bName (filter ((==Box) . form) (map snd (getBlocks iWorld)))) $ \b ->
                 tellSexp ["box", b]
             ln
 
@@ -172,7 +193,7 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             tellAbove iWorld >> ln
 
             line ";; Objects are above floor tiles."
-            forM_ (zip floorTiles (map (map name) iWorld)) $ \(f, os) -> do
+            forM_ (zip floorTiles (map (map name . snd) iWorld)) $ \(f, os) -> do
                 tellSexp ["stacked-on", f, f]
                 mapM_ (\o -> tellSexp ["stacked-on", o, f]) os
         line ")"
@@ -189,7 +210,7 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
         line ")"
     line ")"
   where
-    allBlocks = sortBy (comparing bName) (maybe [] (:[]) mHolding ++ getBlocks iWorld)
+    allBlocks = sortBy (comparing bName) (maybe [] (:[]) mHolding ++ map snd (getBlocks iWorld))
     blockNames = map bName allBlocks
     floorTiles = map (('f':) . show) [0 .. length iWorld-1]
 
@@ -216,7 +237,7 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
                   ]
 
     getOn        = map listToPair . nGrams 2 . reverse
-    isOnElems    = concatMap getOn . zipWith (:) floorTiles . map (map name)
+    isOnElems    = concatMap getOn . zipWith (:) floorTiles . map (map name . snd)
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
     getIn _       []  = []
@@ -231,14 +252,14 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
       where p = (bName b, bName o)
     -- FIXME: What to do if there are multiple boxes? Currently the
     -- outermost box is the only one that counts.
-    isInElems = concatMap (getIn Nothing)
+    isInElems = concatMap (getIn Nothing . snd)
     tellIn world = do
         let elems = isInElems world
             pairToList (a,b) = [a,b]
         forM_ elems $ \(o1, o2) -> tellSexp ["inside", o2, o1]
         forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
     tellAbove world = forM_ allBlocks' $ \o -> tellSexp ["above", name o, name o]
-      where allBlocks' = nubBy ((==) `on` name) (concat world)
+      where allBlocks' = nubBy ((==) `on` name) (concat (map snd world))
 
     tellGoalGen s = mapM_ f . groupFun
       where

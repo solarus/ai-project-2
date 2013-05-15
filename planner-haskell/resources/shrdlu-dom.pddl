@@ -22,16 +22,16 @@
                       (box ?box)
                       (inside ?obj ?box)
                       (stacked-on ?obj ?col)
-                      (stacked-on ?box ?col)
-                      (stacked-on ?from ?col)
                       (stacked-on ?col ?col)
                       (not (stacked-on ?obj ?obj)) ;; not the floor
                       (on ?obj ?from)
                       (inside ?obj ?box))
    :effect       (and (holding-any)
                       (holding ?obj)
+                      (not (on ?obj ?from))
                       (not (inside ?obj ?box))
                       (not (inside-any ?obj))
+                      (not (stacked-on ?obj ?col))
                       (clear ?from)))
 
   ;; pick up object NOT in a box
@@ -42,12 +42,13 @@
                       (not (inside-any ?obj))
                       (clear ?obj)
                       (stacked-on ?obj ?col)
-                      (stacked-on ?from ?col)
                       (stacked-on ?col ?col)
                       (not (stacked-on ?obj ?obj)) ;; not the floor col != obj
                       (on ?obj ?from))
    :effect       (and (holding-any)
                       (holding ?obj)
+                      (not (on ?obj ?from))
+                      (not (stacked-on ?obj ?col))
                       (clear ?from)))
 
   ;; drop an object into a box
@@ -98,9 +99,3 @@
                       (above ?first ?under)
                       (frozen)))
 )
-
-
-
-
-
-

@@ -114,7 +114,7 @@ findLocations w (List [Atom loc, thingDescr]) =
     let allBlocks = getBlocks w
         things = findThings w thingDescr
     in case loc of
-        "beside"  -> let idxs = nub [ i' | (i,_) <- things, i' <- [i-1, i+1] ]
+        "beside"  -> let idxs = nub [ i' | (i,_) <- things, i' <- [i-1, i+1], i >= 0, i < length w ]
                      in concatMap (allThingsAtCol w) idxs
         "leftof"  -> error "TODO findLocations: leftof"
         "rightof" -> error "TODO findLocations: rightof"
@@ -126,9 +126,9 @@ findLocations w (List [Atom loc, thingDescr]) =
 findLocations _ s = error $ "Planner.findLocations: Called with " ++ show s
 
 findBlocks :: World -> SExpr -> [(Col, Thing)]
-findBlocks w (List [Atom "thatis", blockDescr, locDescr]) = locFilter blocks
+findBlocks w (List [Atom "thatis", blockDescr, locDescr]) = intersect blocks locs
   where
-    locFilter = id
+    locs   = findLocations w locDescr
     blocks = findBlocks w blockDescr
 findBlocks w (List [Atom "block", Atom f, Atom s, Atom c]) =
     map (second TBlock) . formFilter . sizeFilter . colFilter $ allBlocks

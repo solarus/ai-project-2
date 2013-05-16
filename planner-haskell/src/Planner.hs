@@ -2,6 +2,7 @@
 
 module Planner where
 
+import Control.Applicative
 import Control.Arrow
 import Control.Monad.Reader
 import Control.Monad.Writer
@@ -77,28 +78,18 @@ tryPut (List [Atom loc, thingDescr]) = do
     case mh of
         Nothing -> error "Planner.tryPut: Nothing to put!"
         Just h ->
-            let blocks = findThings w thingDescr
+            let bs = findThings w thingDescr
             in return $ Just $ case loc of
-                "beside"  -> error "TODO tryPut: beside"
-                "leftof"  -> error "TODO tryPut: leftof"
-                "rightof" -> rightGoalMany w h blocks
-                "above"   -> aboveGoal h blocks
-                "ontop"   -> onGoal h blocks
-                "under"   -> underGoal h blocks
-                "inside"  -> inGoal h blocks
+                -- FIXME: use Control.Lens instead??????
+                "beside"  -> defaultGoal { getBeside  = goalList thingToBlock h bs }
+                "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock h bs }
+                "rightof" -> defaultGoal { getRightOf = goalList thingToBlock h bs }
+                "above"   -> defaultGoal { isAbove    = goalList id h bs }
+                "ontop"   -> defaultGoal { isOn       = goalList id h bs }
+                "under"   -> defaultGoal { isUnder    = goalList thingToBlock h bs }
+                "inside"  -> defaultGoal { isIn       = goalList thingToBlock h bs }
   where
     goalList f h bs = zip (repeat h) (map (f . snd) bs)
-    rightGoalMany w h bs = case thingDescr of
-        Atom "floor"         -> error "You cannot put objects to the right of the floor!"
-        List [Atom "all", _] -> rightGoal w h (maximum (map fst bs))
-        _                    -> rightGoal w h (minimum (map fst bs))
-    rightGoal w h i
-        | i+1 >= length w = error $ "There is no such location!"
-        | otherwise       = defaultGoal { isAbove = goalList id h (getFloorTiles (drop (i+1) w)) }
-    aboveGoal h bs = defaultGoal { isAbove = goalList id h bs }
-    onGoal h bs    = defaultGoal { isOn = goalList id h bs }
-    underGoal h bs = defaultGoal { isUnder = goalList thingToBlock h bs }
-    inGoal h bs    = defaultGoal { isIn = goalList thingToBlock h bs }
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)

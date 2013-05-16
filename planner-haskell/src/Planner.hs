@@ -67,11 +67,20 @@ findGoal (t:ts) = do
 tryGoal :: Tree -> Reader State (Maybe Goal)
 tryGoal t = case action of
     "take" -> tryTake (car rest)
-    "put"  -> tryPut (car rest)
-    "move" -> error "Attila is going to do it"
+    "put"  -> tryPut  (car rest)
+    "move" -> tryMove rest
     _      -> return Nothing
   where
     (Atom action, rest) = uncons (read t)
+
+getQuantifier q = case q of
+    -- FIXME: Here we get a pattern match error if we
+    -- have more than one item in the returned blocks.
+    -- Maybe return a better error message?
+    List (Atom "the" : _) -> \[x] -> The x
+    List (Atom "all" : _) -> All
+    -- This matches any and floor
+    _                     -> Any
 
 tryPut :: SExpr -> Reader State (Maybe Goal)
 tryPut (List [Atom loc, thingDescr]) = do
@@ -80,14 +89,7 @@ tryPut (List [Atom loc, thingDescr]) = do
         Nothing -> error "Planner.tryPut: Nothing to put!"
         Just h ->
             let bs    = findThings w thingDescr
-                quant = case thingDescr of
-                    -- FIXME: Here we get a pattern match error if we
-                    -- have more than one item in the returned blocks.
-                    -- Maybe return a better error message?
-                    List (Atom "the" : _) -> \[x] -> The x
-                    List (Atom "all" : _) -> All
-                    -- This matches any and floor
-                    _                     -> Any
+                quant = getQuantifier thingDescr
             in return $ Just $ case loc of
                 -- FIXME: use Control.Lens instead??????
                 "beside"  -> defaultGoal { getBeside  = goalList quant thingToBlock h bs }
@@ -97,12 +99,29 @@ tryPut (List [Atom loc, thingDescr]) = do
                 "ontop"   -> defaultGoal { getOn      = goalList quant id h bs }
                 "under"   -> defaultGoal { getUnder   = goalList quant thingToBlock h bs }
                 "inside"  -> defaultGoal { getIn      = goalList quant thingToBlock h bs }
+                _         -> error "tryTake: Unknown location"
   where
-    goalList q f h bs = [(The h, q (map (f . snd) bs))]
-tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
+      goalList q f h bs = [(The h, q (map (f . snd) bs))]
+tryPut e = error ("Planner.tryPut: This should not happen!" ++ show e)
 
-tryMove :: [SExpr] -> Reader World (Maybe Goal)
-tryMove = undefined
+tryMove :: SExpr -> Reader State (Maybe Goal)
+tryMove (List [ src, List[ Atom loc,  dst]]) = do
+    (_,w) <- ask
+    let d = findThings w dst
+        s = findThings w src
+        qDst = getQuantifier dst
+        qSrc = getQuantifier src
+        goalList f = [(qSrc (map (thingToBlock . snd) s), qDst (map (f . snd) d))]
+        in return $ Just $ case loc of -- DAVID: Why must it be indented???
+            "beside"  -> defaultGoal { getBeside  = goalList thingToBlock }
+            "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock }
+            "rightof" -> defaultGoal { getRightOf = goalList thingToBlock }
+            "above"   -> defaultGoal { getAbove   = goalList id }
+            "ontop"   -> defaultGoal { getOn      = goalList id }
+            "under"   -> defaultGoal { getUnder   = goalList thingToBlock }
+            "inside"  -> defaultGoal { getIn      = goalList thingToBlock }
+            _         -> error "tryMove: Unknown location"
+tryMove e = error ("Planner.tryMove: This should not happen!\n" ++ show e)
 
 tryTake :: SExpr -> Reader State (Maybe Goal)
 tryTake descr@(List [Atom s, _])
@@ -113,7 +132,7 @@ tryTake descr@(List [Atom s, _])
         let blocks = findThings w descr
         -- The line below crashes if there are floor tiles in `blocks'!
         return (Just (defaultGoal { getHolding = map (thingToBlock . snd) blocks }))
-tryTake d = error ("Planner.tryTake: This should not happen!\n" ++ show d)
+tryTake e = error ("Planner.tryTake: This should not happen!\n" ++ show e)
 
 allThingsAtCol :: World -> Col -> [(Col, Thing)]
 allThingsAtCol w c = map (c,) (snd (w !! c))

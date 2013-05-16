@@ -33,5 +33,15 @@ inputexamples = [
     "Move the green ball on the floor inside the box.",
     "Put the white square under a ball.",
     "Put the ball that is to the left of a pyramid inside the box.",
-    "Take the ball and put it in the box."
+    "Take the ball and put it in the box.",
+
+    "--- Move commands ---",
+    "Move the white ball on the red square",
+    "Move the green block on the floor",
+    "Put the white ball in a red box",
+
+    "--- Not working ---",
+    "Move a block on a block",
+    "put a white ball in a red box that is on the floor",
+    "take a white ball that is on a block"
 ];

@@ -79,19 +79,26 @@ tryPut (List [Atom loc, thingDescr]) = do
     case mh of
         Nothing -> error "Planner.tryPut: Nothing to put!"
         Just h ->
-            let bs = findThings w thingDescr
+            let bs    = findThings w thingDescr
+                quant = case thingDescr of
+                    -- FIXME: Here we get a pattern match error if we
+                    -- have more than one item in the returned blocks.
+                    -- Maybe return a better error message?
+                    List (Atom "the" : _) -> \[x] -> The x
+                    List (Atom "all" : _) -> All
+                    -- This matches any and floor
+                    _                     -> Any
             in return $ Just $ case loc of
                 -- FIXME: use Control.Lens instead??????
-                "beside"  -> defaultGoal { getBeside  = goalList thingToBlock h bs }
-                "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock h bs }
-                "rightof" -> defaultGoal { getRightOf = goalList thingToBlock h bs }
-                "above"   -> defaultGoal { getAbove   = goalList id h bs }
-                "ontop"   -> defaultGoal { getOn      = goalList id h bs }
-                "under"   -> defaultGoal { getUnder   = goalList thingToBlock h bs }
-                "inside"  -> defaultGoal { getIn      = goalList thingToBlock h bs }
+                "beside"  -> defaultGoal { getBeside  = goalList quant thingToBlock h bs }
+                "leftof"  -> defaultGoal { getLeftOf  = goalList quant thingToBlock h bs }
+                "rightof" -> defaultGoal { getRightOf = goalList quant thingToBlock h bs }
+                "above"   -> defaultGoal { getAbove   = goalList quant id h bs }
+                "ontop"   -> defaultGoal { getOn      = goalList quant id h bs }
+                "under"   -> defaultGoal { getUnder   = goalList quant thingToBlock h bs }
+                "inside"  -> defaultGoal { getIn      = goalList quant thingToBlock h bs }
   where
-    -- Assume any for now
-    goalList f h bs = [(The h, Any (map (f . snd) bs))]
+    goalList q f h bs = [(The h, q (map (f . snd) bs))]
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)

@@ -60,10 +60,10 @@ type Tree = String
 type State = (Maybe Block, World)
 
 data Goal = G
-    { isOn       :: [(Block, Thing)]
-    , isIn       :: [(Block, Block)]
-    , isAbove    :: [(Block, Thing)]
-    , isUnder    :: [(Block, Block)]
+    { getOn      :: [(Block, Thing)]
+    , getIn      :: [(Block, Block)]
+    , getAbove   :: [(Block, Thing)]
+    , getUnder   :: [(Block, Block)]
     , getLeftOf  :: [(Block, Block)]
     , getRightOf :: [(Block, Block)]
     , getBeside  :: [(Block, Block)]

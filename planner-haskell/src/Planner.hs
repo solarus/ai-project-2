@@ -84,10 +84,10 @@ tryPut (List [Atom loc, thingDescr]) = do
                 "beside"  -> defaultGoal { getBeside  = goalList thingToBlock h bs }
                 "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock h bs }
                 "rightof" -> defaultGoal { getRightOf = goalList thingToBlock h bs }
-                "above"   -> defaultGoal { isAbove    = goalList id h bs }
-                "ontop"   -> defaultGoal { isOn       = goalList id h bs }
-                "under"   -> defaultGoal { isUnder    = goalList thingToBlock h bs }
-                "inside"  -> defaultGoal { isIn       = goalList thingToBlock h bs }
+                "above"   -> defaultGoal { getAbove   = goalList id h bs }
+                "ontop"   -> defaultGoal { getOn      = goalList id h bs }
+                "under"   -> defaultGoal { getUnder   = goalList thingToBlock h bs }
+                "inside"  -> defaultGoal { getIn      = goalList thingToBlock h bs }
   where
     goalList f h bs = zip (repeat h) (map (f . snd) bs)
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
@@ -215,11 +215,11 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
         indent $ do
             line "(and"
             indent $ do
-                tellHolding (getHolding goal)
-                tellGoalIsOn    (isOn goal)
-                tellGoalIsIn    (isIn goal)
-                tellGoalIsAbove (isAbove goal)
-                tellGoalIsUnder (isUnder goal)
+                tellHolding     (getHolding goal)
+                tellGoalIsOn    (getOn goal)
+                tellGoalIsIn    (getIn goal)
+                tellGoalIsAbove (getAbove goal)
+                tellGoalIsUnder (getUnder goal)
                 tellGoalLeftOf  (getLeftOf goal)
                 tellGoalRightOf (getRightOf goal)
                 tellGoalBeside  (getBeside goal)
@@ -253,23 +253,23 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
                   , size o1 <= size o2
                   ]
 
-    getOn        = map listToPair . nGrams 2 . reverse
-    isOnElems    = concatMap getOn . zipWith (:) floorTiles . map (map name . snd)
+    getOn'       = map listToPair . nGrams 2 . reverse
+    isOnElems    = concatMap getOn' . zipWith (:) floorTiles . map (map name . snd)
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
-    getIn _       []  = []
-    getIn m       (TFloorTile _ : rest) = getIn m rest
-    getIn Nothing (TBlock o:rest)
+    getIn' _       []  = []
+    getIn' m       (TFloorTile _ : rest) = getIn' m rest
+    getIn' Nothing (TBlock o:rest)
                         -- Boxes are inside themselves
-        | form o == Box = (bName o, bName o) : getIn (Just o) rest
-        | otherwise     = getIn Nothing rest
-    getIn (Just b) (TBlock o:rest)
-        | form o == Box = p : getIn (Just o) rest
-        | otherwise     = p : getIn (Just b) rest
+        | form o == Box = (bName o, bName o) : getIn' (Just o) rest
+        | otherwise     = getIn' Nothing rest
+    getIn' (Just b) (TBlock o:rest)
+        | form o == Box = p : getIn' (Just o) rest
+        | otherwise     = p : getIn' (Just b) rest
       where p = (bName b, bName o)
     -- FIXME: What to do if there are multiple boxes? Currently the
     -- outermost box is the only one that counts.
-    isInElems = concatMap (getIn Nothing . snd)
+    isInElems = concatMap (getIn' Nothing . snd)
     tellIn world = do
         let elems = isInElems world
             pairToList (a,b) = [a,b]

@@ -112,14 +112,14 @@
                       (under ?first ?above)
                       (frozen)))
 
-
   (:action set-left-right
    :parameters (?x ?y ?left-floor ?right-floor)
    :precondition (and (stacked-on ?x ?left-floor)
                       (stacked-on ?y ?right-floor)
                       (right-of ?left-floor ?right-floor))
    :effect       (and (right-of ?x ?y)
-                      (left-of  ?y ?x)))
+                      (left-of  ?y ?x)
+                      (frozen)))
 
   (:action set-beside
    :parameters (?x ?y ?left-floor ?right-floor)
@@ -127,5 +127,6 @@
                       (stacked-on ?y ?right-floor)
                       (beside ?left-floor ?right-floor))
    :effect       (and (beside ?x ?y)
-                      (beside ?y ?x)))
+                      (beside ?y ?x)
+                      (frozen)))
 )

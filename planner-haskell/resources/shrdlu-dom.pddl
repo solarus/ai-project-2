@@ -12,7 +12,9 @@
                (holding ?x)        ;; 'x' is up in the air
                (frozen)            ;; cant move anything after that
                (above ?x ?y)       ;; 'x' is somewhere above 'y'
-               (under ?x ?y))      ;; 'x' is somewhere under 'y'
+               (under ?x ?y)       ;; 'x' is somewhere under 'y'
+               (left-of ?x ?y)     ;; 'x' is somewhere left of 'y'
+               (right-of ?x ?y))   ;; 'x' is somewhere right of 'y'
 
   ;; pick up object that is in a box
   (:action pick-in
@@ -100,11 +102,21 @@
                       (above ?first ?under)
                       (frozen)))
 
-  ;;
+  ;; Set a flag that a 'first' is below or under 'second' and 'above'
   (:action set-under
    :parameters (?first ?second ?above)
    :precondition (and (on ?second ?first)
                       (under ?second ?above))
    :effect       (and (under ?first ?second)
-                      (under ?first ?above)))
+                      (under ?first ?above)
+                      (frozen)))
+
+
+  (:action set-left-right
+   :parameters (?x ?y ?left-floor ?right-floor)
+   :precondition (and (stacked-on ?x ?left-floor)
+                      (stacked-on ?y ?right-floor)
+                      (right-of ?left-floor ?right-floor))
+   :effect       (and (right-of ?x ?y)
+                      (left-of  ?y ?x)))
 )

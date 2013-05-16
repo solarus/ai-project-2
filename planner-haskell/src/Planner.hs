@@ -68,6 +68,7 @@ tryGoal :: Tree -> Reader State (Maybe Goal)
 tryGoal t = case action of
     "take" -> tryTake (car rest)
     "put"  -> tryPut (car rest)
+    "move" -> error "Attila is going to do it"
     _      -> return Nothing
   where
     (Atom action, rest) = uncons (read t)
@@ -122,14 +123,17 @@ findLocations w (List [Atom loc, thingDescr]) =
                      in concatMap (allThingsAtCol w) idxs
         "rightof" -> let idxs = nub [i' | (i, _) <- things, i' <- [i+1 .. (length w) - 1], i >= 0]
                      in concatMap (allThingsAtCol w) idxs
-        "above"   -> let colThings = [((w!!c), t) | (c, t) <- things ]
-                         cols = map (\((c, ts), t) -> (map (\t -> (c, t)) (tail (dropWhile (== t) ts)))) colThings
-                     in concat cols
-        "ontop"   -> error "TODO findLocations: ontop"
+        "above"   -> let colThings = nub [((w!!c), t) | (c, t) <- things ] -- colThings :: [([Thing], Thing)]
+                     in concatMap tailAfter colThings
+        "ontop"   -> let colThings = nub [((w!!c), t) | (c, t) <- things ] -- colThings :: [([Thing], Thing)]
+                     in take 1 $ concatMap tailAfter colThings
         "under"   -> error "TODO findLocations: under"
         "inside"  -> error "TODO findLocations: inside"
         _ -> error "Planner.findLocations: This should not happen!"
 findLocations _ s = error $ "Planner.findLocations: Called with " ++ show s
+
+tailAfter ((c, ts), t) = concat $ map (\ts' -> (tag c ts)) (tail $ dropWhile (==t) ts)
+tag t ts = map (t, ) ts
 
 findBlocks :: World -> SExpr -> [(Col, Thing)]
 findBlocks w (List [Atom "thatis", blockDescr, locDescr]) = intersect blocks locs

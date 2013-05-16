@@ -7,7 +7,7 @@ PATH=$PATH:/usr/local/bin/
 
 ff_out=$(../bin/ff -o $domain -f $problem_file)
 
-if [ $? ]; then
+if [[ $? != 0 ]] ; then
     echo "Some error occured. Output from ff:"
     echo ""
     echo "$ff_out"

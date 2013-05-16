@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveFunctor #-}
+
 module Types
     ( Size(..)
     , Color(..)
@@ -10,6 +12,7 @@ module Types
     , World
     , Tree
     , State
+    , Quantifier(..)
     , Goal(..)
     , defaultGoal
     , isFloorTile
@@ -59,14 +62,17 @@ type Tree = String
 
 type State = (Maybe Block, World)
 
+data Quantifier a = The a | Any [a] | All [a]
+  deriving (Eq, Show, Functor)
+
 data Goal = G
-    { getOn      :: [(Block, Thing)]
-    , getIn      :: [(Block, Block)]
-    , getAbove   :: [(Block, Thing)]
-    , getUnder   :: [(Block, Block)]
-    , getLeftOf  :: [(Block, Block)]
-    , getRightOf :: [(Block, Block)]
-    , getBeside  :: [(Block, Block)]
+    { getOn      :: [(Quantifier Block, Quantifier Thing)]
+    , getIn      :: [(Quantifier Block, Quantifier Block)]
+    , getAbove   :: [(Quantifier Block, Quantifier Thing)]
+    , getUnder   :: [(Quantifier Block, Quantifier Block)]
+    , getLeftOf  :: [(Quantifier Block, Quantifier Block)]
+    , getRightOf :: [(Quantifier Block, Quantifier Block)]
+    , getBeside  :: [(Quantifier Block, Quantifier Block)]
     , getHolding :: [Block]
     }
   deriving (Eq, Show)

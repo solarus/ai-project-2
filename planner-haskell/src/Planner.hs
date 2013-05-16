@@ -5,7 +5,7 @@ module Planner where
 import Control.Applicative
 import Control.Arrow
 import Control.Monad.Reader
-import Control.Monad.Writer
+import Control.Monad.Writer hiding (Any, All)
 import Data.Function
 import Data.List
 import Data.Maybe
@@ -90,7 +90,8 @@ tryPut (List [Atom loc, thingDescr]) = do
                 "under"   -> defaultGoal { getUnder   = goalList thingToBlock h bs }
                 "inside"  -> defaultGoal { getIn      = goalList thingToBlock h bs }
   where
-    goalList f h bs = zip (repeat h) (map (f . snd) bs)
+    -- Assume any for now
+    goalList f h bs = [(The h, Any (map (f . snd) bs))]
 tryPut x = error $ "Planner.tryPut: This should not happen!" ++ (show x)
 
 tryMove :: [SExpr] -> Reader World (Maybe Goal)
@@ -296,25 +297,25 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             neighbors = zip <*> tail $ floorTiles
         forM_ neighbors $ \(f1, f2) -> tellSexp ["beside", name f1, name f2 ]
 
-    tellGoalGen s = mapM_ f . groupFun
+    tellGoalGen s = mapM_ f
       where
-        groupFun = map ((fst . head) &&& map snd)
-                 . groupBy ((==) `on` (bName . fst))
-                 . sortBy (comparing (bName . fst))
-        f (_   ,  []) = error "toPDDL.tellGoalIsOn: This should not happen!"
-        f (from, [x]) = tellSexp [s, bName from, name x]
-        f (from,  xs) = do
-            line "(or"
-            indent $ mapM_ (\to -> tellSexp [s, bName from, name to]) xs
-            line ")"
+        tellMany s xs w = line ("("++s) >> indent (forM_ xs w) >> line ")"
+        tellQuant :: Block -> Quantifier Thing -> Writer [String] ()
+        tellQuant x (The y)  = tellSexp [s , bName x, name y]
+        tellQuant x (Any ys) = tellMany "or"  ys $ \y -> tellSexp [s, bName x, name y]
+        tellQuant x (All ys) = tellMany "and" ys $ \y -> tellSexp [s, bName x, name y]
+        f (The x, rest) = tellQuant x rest
+        f (Any x, rest) = tellMany "or" (map (,rest) x) $ uncurry tellQuant
+        f (All x, rest) = tellMany "or" (map (,rest) x) $ uncurry tellQuant
 
+    -- Here it would be nice with Control.Lens also :(
     tellGoalIsOn    = tellGoalGen "on"
-    tellGoalIsIn    = tellGoalGen "inside" . map (second TBlock)
+    tellGoalIsIn    = tellGoalGen "inside" . map (second (fmap TBlock))
     tellGoalIsAbove = tellGoalGen "above"
-    tellGoalIsUnder = tellGoalGen "under" . map (second TBlock)
-    tellGoalLeftOf  = tellGoalGen "left-of" . map (second TBlock)
-    tellGoalRightOf = tellGoalGen "right-of" . map (second TBlock)
-    tellGoalBeside  = tellGoalGen "beside" . map (second TBlock)
+    tellGoalIsUnder = tellGoalGen "under" . map (second (fmap TBlock))
+    tellGoalLeftOf  = tellGoalGen "left-of" . map (second (fmap TBlock))
+    tellGoalRightOf = tellGoalGen "right-of" . map (second (fmap TBlock))
+    tellGoalBeside  = tellGoalGen "beside" . map (second (fmap TBlock))
 
 -- FIXME: perhaps remove these later
 ------------------------------------

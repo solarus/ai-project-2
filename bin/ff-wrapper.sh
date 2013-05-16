@@ -7,19 +7,18 @@ PATH=$PATH:/usr/local/bin/
 
 ff_out=$(../bin/ff -o $domain -f $problem_file)
 
-case $ff_out in
-    *"goal can be simplified to FALSE"*)
-        echo "Goal can be simplifiead to FALSE!"
-        exit 1
-        ;;
-esac
+if [ $? ]; then
+    echo "Some error occured. Output from ff:"
+    echo ""
+    echo "$ff_out"
+    exit 1
+fi
 
 actions=$(echo -e "$ff_out" | egrep "((PICK|DROP)-(IN|ON))")
 
 # Todo error handling
 # fix for BSD, use 'gsed' if present...
-if hash gsed 2>/dev/null; then
-  echo "$actions" | cut -b 12- | gsed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/'
-else
-  echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/'
-fi
+sed_bin="sed"
+hash gsed 2> /dev/null && sed_bin="gsed"
+
+echo "$actions" | cut -b 12- | $sed_bin -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/'

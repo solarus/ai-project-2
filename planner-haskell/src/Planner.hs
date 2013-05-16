@@ -135,8 +135,11 @@ findLocations w (List [Atom loc, thingDescr]) =
                      in concatMap tailAfter colThings
         "ontop"   -> let colThings = nub [((w!!c), t) | (c, t) <- things ] -- colThings :: [([Thing], Thing)]
                      in take 1 $ concatMap tailAfter colThings
-        "under"   -> error "TODO findLocations: under"
-        "inside"  -> error "TODO findLocations: inside"
+        "under"   -> let allUnderThing (c,t) = map (c,) . takeWhile (/=t) . snd $ w!!c
+                     in nub (concatMap allUnderThing things)
+        "inside"  -> let allInsideThing (c,t) =   map (c,) . takeWhile ((/=Box) . form . thingToBlock)
+                                                . tail . dropWhile (/=t) . snd $ w!!c
+                     in nub (concatMap allInsideThing things)
         _ -> error "Planner.findLocations: This should not happen!"
 findLocations _ s = error $ "Planner.findLocations: Called with " ++ show s
 

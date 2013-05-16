@@ -14,7 +14,8 @@
                (above ?x ?y)       ;; 'x' is somewhere above 'y'
                (under ?x ?y)       ;; 'x' is somewhere under 'y'
                (left-of ?x ?y)     ;; 'x' is somewhere left of 'y'
-               (right-of ?x ?y))   ;; 'x' is somewhere right of 'y'
+               (right-of ?x ?y)    ;; 'x' is somewhere right of 'y'
+               (beside ?x ?y))     ;; 'x' is directly beside 'y'
 
   ;; pick up object that is in a box
   (:action pick-in
@@ -119,4 +120,12 @@
                       (right-of ?left-floor ?right-floor))
    :effect       (and (right-of ?x ?y)
                       (left-of  ?y ?x)))
+
+  (:action set-beside
+   :parameters (?x ?y ?left-floor ?right-floor)
+   :precondition (and (stacked-on ?x ?left-floor)
+                      (stacked-on ?y ?right-floor)
+                      (beside ?left-floor ?right-floor))
+   :effect       (and (beside ?x ?y)
+                      (beside ?y ?x)))
 )

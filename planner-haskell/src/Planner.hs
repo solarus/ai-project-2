@@ -207,6 +207,9 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
             line ";; Objects are above and under themselves."
             tellAboveUnder iWorld >> ln
 
+            line ";; The floor tiles are left-of and right-of other floor tiles."
+            tellLeftRight iWorld >> ln
+
             line ";; Objects are above floor tiles."
             forM_ (zip floorTiles (map (map name . snd) iWorld)) $ \(f, os) -> do
                 tellSexp ["stacked-on", f, f]
@@ -223,6 +226,8 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
                 tellGoalIsIn    (isIn goal)
                 tellGoalIsAbove (isAbove goal)
                 tellGoalIsUnder (isUnder goal)
+                tellGoalLeftOf  (getLeftOf goal)
+                tellGoalRightOf (getRightOf goal)
             line ")"
         line ")"
     line ")"
@@ -280,6 +285,13 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
         tellSexp ["under", name o, name o]
       where allBlocks' = nubBy ((==) `on` name) (concat (map snd world))
 
+    tellLeftRight world = do
+        let floorTiles = sortBy (comparing fst) (getFloorTiles world)
+            leftOf     = [ (f1,f2) | (c1,f1) <- floorTiles, (c2,f2) <- floorTiles, c1 < c2 ]
+            rightOf    = [ (f1,f2) | (c1,f1) <- floorTiles, (c2,f2) <- floorTiles, c1 > c2 ]
+        forM_ leftOf  $ \(f1, f2) -> tellSexp ["left-of",  name f1, name f2 ]
+        forM_ rightOf $ \(f1, f2) -> tellSexp ["right-of", name f1, name f2 ]
+
     tellGoalGen s = mapM_ f . groupFun
       where
         groupFun = map ((fst . head) &&& map snd)
@@ -296,6 +308,8 @@ toPDDL initial@(mHolding, iWorld) goal = unlines . execWriter $ do
     tellGoalIsIn    = tellGoalGen "inside" . map (second TBlock)
     tellGoalIsAbove = tellGoalGen "above"
     tellGoalIsUnder = tellGoalGen "under" . map (second TBlock)
+    tellGoalLeftOf  = tellGoalGen "left-of" . map (second TBlock)
+    tellGoalRightOf = tellGoalGen "right-of" . map (second TBlock)
 
 -- FIXME: perhaps remove these later
 ------------------------------------

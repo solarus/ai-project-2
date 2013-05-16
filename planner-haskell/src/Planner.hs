@@ -137,7 +137,7 @@ tryTake e = error ("Planner.tryTake: This should not happen!\n" ++ show e)
 allThingsAtCol :: World -> Col -> [(Col, Thing)]
 allThingsAtCol w c = map (c,) (snd (w !! c))
 
--- | Given a location expression returns all things that matches the
+-- | Given a location expression returns all things in the world that match the
 -- location description.
 findLocations :: World -> SExpr -> [(Col, Thing)]
 findLocations w (List [Atom loc, thingDescr]) =
@@ -150,20 +150,17 @@ findLocations w (List [Atom loc, thingDescr]) =
                      in concatMap (allThingsAtCol w) idxs
         "rightof" -> let idxs = nub [i' | (i, _) <- things, i' <- [i+1 .. (length w) - 1], i >= 0]
                      in concatMap (allThingsAtCol w) idxs
-        "above"   -> let colThings = nub [((w!!c), t) | (c, t) <- things ] -- colThings :: [([Thing], Thing)]
-                     in concatMap tailAfter colThings
-        "ontop"   -> let colThings = nub [((w!!c), t) | (c, t) <- things ] -- colThings :: [([Thing], Thing)]
-                     in take 1 $ concatMap tailAfter colThings
-        "under"   -> let allUnderThing (c,t) = map (c,) . takeWhile (/=t) . snd $ w!!c
+        "above"   -> let allAboveThing (c, t) = map (c, ) . tail . dropWhile (/=t) . snd $ w!!c
+                     in nub $ concatMap allAboveThing things
+        "ontop"   -> let allOnTopThing (c, t) = take 1 $ map (c, ) . tail . dropWhile (/=t) . snd $ w!!c
+                     in nub $ concatMap allOnTopThing things
+        "under"   -> let allUnderThing (c, t) = map (c, ) . takeWhile (/=t) . snd $ w!!c
                      in nub (concatMap allUnderThing things)
         "inside"  -> let allInsideThing (c,t) =   map (c,) . takeWhile ((/=Box) . form . thingToBlock)
                                                 . tail . dropWhile (/=t) . snd $ w!!c
                      in nub (concatMap allInsideThing things)
-        _ -> error "Planner.findLocations: This should not happen!"
+        _         -> error $ "Planner.findLocations: This should not happen! Wrong location: " ++ loc
 findLocations _ s = error $ "Planner.findLocations: Called with " ++ show s
-
-tailAfter ((c, ts), t) = concat $ map (\ts' -> (tag c ts)) (tail $ dropWhile (==t) ts)
-tag t ts = map (t, ) ts
 
 findBlocks :: World -> SExpr -> [(Col, Thing)]
 findBlocks w (List [Atom "thatis", blockDescr, locDescr]) = intersect blocks locs

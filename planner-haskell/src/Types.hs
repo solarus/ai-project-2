@@ -23,7 +23,7 @@ module Types
     ) where
 
 -- TODO: Specialized Ord instance
-data Size = Small | Tall | Wide | Medium | Large
+data Size = Small | Tall | Medium | Wide | Large
   deriving (Eq, Show, Read, Ord)
 
 data Color = Black | White | Blue | Green | Yellow | Red

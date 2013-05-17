@@ -20,6 +20,7 @@ module Types
     , getFloorTiles
     , name
     , thingToBlock
+    , getColOf
     ) where
 
 -- TODO: Specialized Ord instance
@@ -91,6 +92,12 @@ getBlocks w = [ (c,b) | (c,bs) <- w, TBlock b <- bs ]
 
 getFloorTiles :: World -> [(Col, Thing)]
 getFloorTiles w = [ (c,f) | (c, (f:_)) <- w ]
+
+getColOf :: Thing -> World -> Col
+getColOf t [] = error "getColOf: This should not happen!"
+getColOf t ((col,ts):rest)
+    | t `elem` ts = col
+    | otherwise   = getColOf t rest
 
 thingToBlock :: Thing -> Block
 thingToBlock (TBlock b) = b

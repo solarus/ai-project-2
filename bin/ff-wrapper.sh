@@ -5,7 +5,7 @@ problem_file=$1
 
 PATH=$PATH:/usr/local/bin/
 
-ff_out=$(../bin/ff -o $domain -f $problem_file)
+ff_out=$(../bin/ff2 -o $domain -f $problem_file -s 2)
 
 if [[ $? != 0 ]] ; then
     echo "Some error occured. Output from ff:"
@@ -14,11 +14,11 @@ if [[ $? != 0 ]] ; then
     exit 1
 fi
 
-actions=$(echo -e "$ff_out" | egrep "((PICK|DROP)-(IN|ON))")
+actions=$(echo -e "$ff_out" | egrep -i "((PICK|DROP)-(IN|ON))")
 
 # Todo error handling
 # fix for BSD, use 'gsed' if present...
 sed_bin="sed"
 hash gsed 2> /dev/null && sed_bin="gsed"
 
-echo "$actions" | cut -b 12- | $sed_bin -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/'
+echo "$actions" | cut -b 12- | $sed_bin -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'

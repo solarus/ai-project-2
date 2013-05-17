@@ -1,5 +1,6 @@
 (define (domain shrdlu)
-  (:requirements :strips :equality :adl)
+;;;; This is not needed for metric-ff
+;;  (:requirements :strips :equality :adl)
 
   (:predicates (clear ?x)          ;; 'x' is top-most block
                (on ?x ?y)          ;; 'x' is on top of 'y'

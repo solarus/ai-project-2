@@ -1,0 +1,156 @@
+#+TITLE:
+#+AUTHOR: Bartolomeus Jankowski, Attila Nagy, David Spångberg
+#+DATE:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+LATEX_HEADER: \usepackage{fullpage,xcolor,listings, algpseudocode, algorithm}
+#+LATEX_HEADER: \usepackage[style=alphabetic,citestyle=alphabetic]{biblatex}
+#+LATEX_HEADER: \addbibresource{references.bib}
+
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{calc,3d}
+
+# #### Palatino font
+#+LATEX_HEADER: \usepackage[sc]{mathpazo}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \linespread{1.05} % Palatino needs more leading (space between lines)
+
+#+BEGIN_LATEX
+\hyphenation{Perceptron}
+
+\setlength{\parskip}{0.2cm}
+\setlength{\parindent}{0pt}
+\newcommand{\note}[1]{{\color{blue} Note: \emph{#1}}}
+\newcommand{\todo}[1]{{\color{red} TODO: \emph{#1}}}
+
+\definecolor{lightgrey}{gray}{0.9}
+\lstset
+{
+keywordstyle=\textbf,
+numbers=left,
+numberstyle=\scriptsize,
+frame=l,
+numbersep=7pt,
+xleftmargin=10pt
+}
+
+\lstloadlanguages{Haskell}
+\lstnewenvironment{haskell}
+    {\lstset{}%
+      \csname lst@SetFirstLabel\endcsname}
+    {\csname lst@SaveFirstLabel\endcsname}
+    \lstset{
+      basicstyle=\small\ttfamily,
+      flexiblecolumns=false,
+      basewidth={0.5em,0.45em},
+      literate={+}{{$+$}}1 {/}{{$/$}}1 {*}{{$*$}}1 {=}{{$=$}}1
+               {>}{{$>$}}1 {<}{{$<$}}1 {\\}{{$\lambda$}}1
+               {\\\\}{{\char`\\\char`\\}}1
+               {->}{{$\rightarrow$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
+               {<=}{{$\leq$}}2 {=>}{{$\Rightarrow$}}2
+               {\ .}{{$\circ$}}2 {\ .\ }{{$\circ$}}2
+               {>>}{{>>}}2 {>>=}{{>>=}}2
+               {|}{{$\mid$}}1
+    }
+#+END_LATEX
+
+\thispagestyle{empty}
+
+\begin{centering}
+\includegraphics[width=11cm]{gu.eps} \\
+\vspace{1cm}
+\includegraphics[width=5cm]{chalmers.eps}
+\vspace{5cm}
+
+\huge
+Controlling a Shrdlite robot \\ using Haskell
+\\\Large \vspace{0.5cm} Group 14
+
+\vspace{0.5cm}
+\normalsize
+\end{centering}
+
+# The hspace is a hack to align the table a little more to the right.
+# I.e. to move the vertical bar closer to the middle of the page.
+| /               |                   <r> |                                   |
+| /               |                     > |                                   |
+| \hspace{0.25cm} | Bartolomeus Jankowski | \texttt{<brtk666@gmail.com>}      |
+|                 |           Attila Nagy | \texttt{<attilanagy85@gmail.com>} |
+|                 |       David Spångberg | \texttt{<david@tunna.org>}        |
+\newpage
+
+\pagenumbering{roman}
+
+#+BEGIN_LATEX
+$~$
+\vspace{4.3cm}
+
+\section*{Abstract}
+\smallskip
+   \todo{TODO}
+\noindent \textbf{Keywords:} TODO
+
+
+\addcontentsline{toc}{section}{Abstract}
+#+END_LATEX
+
+\newpage
+[TABLE-OF-CONTENTS]
+\newpage
+
+\pagenumbering{arabic}
+
+* Introduction and Background
+   \todo{TODO}
+
+** Problem description
+   \todo{TODO}
+** Related work
+   \todo{TODO}
+** Available tools
+   \todo{TODO}
+\newpage
+
+* Overview of the architecture
+   \todo{TODO}
+
+** Finished work
+   \todo{TODO}
+** Work in progress
+   Here, some parts that are still under development are touched upon.
+
+*** Bug corrections
+   \todo{TODO}
+
+** Future work
+   This section mentions some of the many viable additions for the
+   library which might further increase its usability.
+
+* Results and Evaluation
+   \todo{TODO}
+
+* Discussion
+   \todo{TODO}
+
+* Conclusions
+   \todo{TODO}
+
+\printbibliography
+
+\appendix
+
+\addcontentsline{toc}{section}{Appendix}
+
+* Individual stories
+** Attila Nagy
+
+** David Spångberg
+
+** Bartolomeus Jankowski
+* Other
+   \note{Here you include all other information and documentation that
+   did not fit into the report in the above sections but that you
+   consider too important to leave out.}
+
+* Footnotes

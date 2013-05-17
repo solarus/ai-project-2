@@ -120,15 +120,14 @@ tryMove (List [ src, List[ Atom loc,  dst]]) = do
         qDst = getQuantifier dst
         qSrc = getQuantifier src
         goalList f = [(qSrc (map (thingToBlock . snd) s), qDst (map (f . snd) d))]
-        goal = defaultGoal { getStackedSame = [ (c, b) | (c, TBlock b) <- d ] }
-    return $ Just $ case loc of -- DAVID: Why must it be indented???
-        "beside"  -> goal { getBeside  = goalList thingToBlock }
-        "leftof"  -> goal { getLeftOf  = goalList thingToBlock }
-        "rightof" -> goal { getRightOf = goalList thingToBlock }
-        "above"   -> goal { getAbove   = goalList id }
-        "ontop"   -> goal { getOn      = goalList id }
-        "under"   -> goal { getUnder   = goalList thingToBlock }
-        "inside"  -> goal { getIn      = goalList thingToBlock }
+    return $ Just $ case loc of
+        "beside"  -> defaultGoal { getBeside  = goalList thingToBlock }
+        "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock }
+        "rightof" -> defaultGoal { getRightOf = goalList thingToBlock }
+        "above"   -> defaultGoal { getAbove   = goalList id }
+        "ontop"   -> defaultGoal { getOn      = goalList id }
+        "under"   -> defaultGoal { getUnder   = goalList thingToBlock }
+        "inside"  -> defaultGoal { getIn      = goalList thingToBlock }
         _         -> error "tryMove: Unknown location"
 tryMove e = error ("Planner.tryMove: This should not happen!\n" ++ show e)
 
@@ -210,11 +209,16 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
         line "(:init"
 
         indent $ do
+            tellSexp ["=", "(moves)", "0"]
+
             tellHolding (maybeToList mHolding)
 
             line ";; All objects are smaller than the floor tiles."
             let smallerThanFloor = [ (o, f) | o <- blockNames, f <- floorTiles ]
             mapM_ tellSmaller smallerThanFloor >> ln
+
+            line ";; All floor tiles are frozen."
+            forM_ floorTiles $ \f -> tellSexp ["frozen", f]
 
             line ";; Some objects are smaller than others."
             mapM_ tellSmaller smallerThan >> ln
@@ -263,9 +267,10 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
                 tellGoalLeftOf  (getLeftOf goal)
                 tellGoalRightOf (getRightOf goal)
                 tellGoalBeside  (getBeside goal)
-                tellGoalStackedSame (getStackedSame goal)
             line ")"
         line ")"
+
+        tellSexp [":metric", "minimize", "(moves)"]
     line ")"
   where
     allBlocks = sortBy (comparing bName) (maybe [] (:[]) mHolding ++ map snd (getBlocks iWorld))
@@ -335,11 +340,18 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
 
     tellGoalGen s = mapM_ f
       where
+        tellOne x y = do
+            line "(and"
+            indent $ do
+                let col = getColOf y iWorld
+                tellSexp [s, bName x, name y]
+                tellSexp ["above", name y, 'f' : show col]
+            line ")"
         tellMany s xs w = line ("("++s) >> indent (forM_ xs w) >> line ")"
         tellQuant :: Block -> Quantifier Thing -> Writer [String] ()
-        tellQuant x (The y)  = tellSexp [s , bName x, name y]
-        tellQuant x (Any ys) = tellMany "or"  ys $ \y -> tellSexp [s, bName x, name y]
-        tellQuant x (All ys) = tellMany "and" ys $ \y -> tellSexp [s, bName x, name y]
+        tellQuant x (The y)  = tellOne x y
+        tellQuant x (Any ys) = tellMany "or"  ys $ tellOne x
+        tellQuant x (All ys) = tellMany "and" ys $ tellOne x
         f (The x, rest) = tellQuant x rest
         f (Any x, rest) = tellMany "or" (map (,rest) x) $ uncurry tellQuant
         f (All x, rest) = tellMany "and" (map (,rest) x) $ uncurry tellQuant
@@ -352,7 +364,6 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
     tellGoalLeftOf  = tellGoalGen "left-of" . map (second (fmap TBlock))
     tellGoalRightOf = tellGoalGen "right-of" . map (second (fmap TBlock))
     tellGoalBeside  = tellGoalGen "beside" . map (second (fmap TBlock))
-    tellGoalStackedSame bs = forM_ bs $ \(c, b) -> tellSexp ["stacked-on", bName b, 'f' : show c]
 
 -- FIXME: perhaps remove these later
 ------------------------------------

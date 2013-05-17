@@ -27,8 +27,15 @@ planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
     let ff = "../bin/ff-wrapper.sh"
         args = [fp]
     (exitCode, out, err) <- readProcessWithExitCode ff args ""
+    let getNum = read . (!!1) . words :: String -> Int
+        moves  = lines out
+        prune [] = []
+        prune [x] = [x]
+        prune (x:y:xys)
+            | getNum x /= getNum y = x : prune (y:xys)
+            | otherwise            = prune xys
     if exitCode == ExitSuccess
-        then return (lines out ++ map ("# "++ ) (lines problem))
+        then return (prune moves ++ map ("# "++ ) (lines problem))
         else return $ ["# Got an error!"] ++ map ("# "++) (lines out ++ lines err ++ lines problem)
 
 findPlan :: State -> [Tree] -> IO [String]

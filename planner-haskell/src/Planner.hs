@@ -113,15 +113,16 @@ tryMove (List [ src, List[ Atom loc,  dst]]) = do
         qDst = getQuantifier dst
         qSrc = getQuantifier src
         goalList f = [(qSrc (map (thingToBlock . snd) s), qDst (map (f . snd) d))]
-        in return $ Just $ case loc of -- DAVID: Why must it be indented???
-            "beside"  -> defaultGoal { getBeside  = goalList thingToBlock }
-            "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock }
-            "rightof" -> defaultGoal { getRightOf = goalList thingToBlock }
-            "above"   -> defaultGoal { getAbove   = goalList id }
-            "ontop"   -> defaultGoal { getOn      = goalList id }
-            "under"   -> defaultGoal { getUnder   = goalList thingToBlock }
-            "inside"  -> defaultGoal { getIn      = goalList thingToBlock }
-            _         -> error "tryMove: Unknown location"
+        goal = defaultGoal { getStackedSame = [ (c, b) | (c, TBlock b) <- d ] }
+    return $ Just $ case loc of -- DAVID: Why must it be indented???
+        "beside"  -> goal { getBeside  = goalList thingToBlock }
+        "leftof"  -> goal { getLeftOf  = goalList thingToBlock }
+        "rightof" -> goal { getRightOf = goalList thingToBlock }
+        "above"   -> goal { getAbove   = goalList id }
+        "ontop"   -> goal { getOn      = goalList id }
+        "under"   -> goal { getUnder   = goalList thingToBlock }
+        "inside"  -> goal { getIn      = goalList thingToBlock }
+        _         -> error "tryMove: Unknown location"
 tryMove e = error ("Planner.tryMove: This should not happen!\n" ++ show e)
 
 tryTake :: SExpr -> Reader State (Maybe Goal)
@@ -255,6 +256,7 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
                 tellGoalLeftOf  (getLeftOf goal)
                 tellGoalRightOf (getRightOf goal)
                 tellGoalBeside  (getBeside goal)
+                tellGoalStackedSame (getStackedSame goal)
             line ")"
         line ")"
     line ")"
@@ -333,7 +335,7 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
         tellQuant x (All ys) = tellMany "and" ys $ \y -> tellSexp [s, bName x, name y]
         f (The x, rest) = tellQuant x rest
         f (Any x, rest) = tellMany "or" (map (,rest) x) $ uncurry tellQuant
-        f (All x, rest) = tellMany "or" (map (,rest) x) $ uncurry tellQuant
+        f (All x, rest) = tellMany "and" (map (,rest) x) $ uncurry tellQuant
 
     -- Here it would be nice with Control.Lens also :(
     tellGoalIsOn    = tellGoalGen "on"
@@ -343,6 +345,7 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
     tellGoalLeftOf  = tellGoalGen "left-of" . map (second (fmap TBlock))
     tellGoalRightOf = tellGoalGen "right-of" . map (second (fmap TBlock))
     tellGoalBeside  = tellGoalGen "beside" . map (second (fmap TBlock))
+    tellGoalStackedSame bs = forM_ bs $ \(c, b) -> tellSexp ["stacked-on", bName b, 'f' : show c]
 
 -- FIXME: perhaps remove these later
 ------------------------------------
@@ -352,4 +355,3 @@ testState = (Nothing, testWorld)
 
 testWorld :: World
 testWorld = strToWorld ";a,b;c,d;;e,f,g,h,i;;;j,k;;l,m"
-

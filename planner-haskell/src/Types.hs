@@ -66,14 +66,15 @@ data Quantifier a = The a | Any [a] | All [a]
   deriving (Eq, Show, Functor)
 
 data Goal = G
-    { getOn      :: [(Quantifier Block, Quantifier Thing)]
-    , getIn      :: [(Quantifier Block, Quantifier Block)]
-    , getAbove   :: [(Quantifier Block, Quantifier Thing)]
-    , getUnder   :: [(Quantifier Block, Quantifier Block)]
-    , getLeftOf  :: [(Quantifier Block, Quantifier Block)]
-    , getRightOf :: [(Quantifier Block, Quantifier Block)]
-    , getBeside  :: [(Quantifier Block, Quantifier Block)]
-    , getHolding :: [Block]
+    { getOn          :: [(Quantifier Block, Quantifier Thing)]
+    , getIn          :: [(Quantifier Block, Quantifier Block)]
+    , getAbove       :: [(Quantifier Block, Quantifier Thing)]
+    , getUnder       :: [(Quantifier Block, Quantifier Block)]
+    , getLeftOf      :: [(Quantifier Block, Quantifier Block)]
+    , getRightOf     :: [(Quantifier Block, Quantifier Block)]
+    , getBeside      :: [(Quantifier Block, Quantifier Block)]
+    , getHolding     :: [Block]
+    , getStackedSame :: [(Col, Block)]
     }
   deriving (Eq, Show)
 
@@ -81,7 +82,7 @@ isFloorTile (TFloorTile _) = True
 isFloorTile _              = False
 
 defaultGoal :: Goal
-defaultGoal = G [] [] [] [] [] [] [] []
+defaultGoal = G [] [] [] [] [] [] [] [] []
 
 getThings :: World -> [(Int, Thing)]
 getThings w = [ (c,b) | (c,bs) <- w, b <- bs ]

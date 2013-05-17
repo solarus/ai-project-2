@@ -5,7 +5,7 @@ problem_file=$1
 
 PATH=$PATH:/usr/local/bin/
 
-ff_out=$(../bin/ff2 -o $domain -f $problem_file -s 2)
+ff_out=$(../bin/ff2 -o $domain -f $problem_file -s 5)
 
 if [[ $? != 0 ]] ; then
     echo "Some error occured. Output from ff:"
@@ -14,7 +14,7 @@ if [[ $? != 0 ]] ; then
     exit 1
 fi
 
-actions=$(echo -e "$ff_out" | egrep -i "((PICK|DROP)-(IN|ON))")
+actions=$(echo -e "$ff_out" | egrep -i "(PICK|DROP)")
 
 # Todo error handling
 # fix for BSD, use 'gsed' if present...

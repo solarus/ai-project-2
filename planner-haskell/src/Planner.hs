@@ -310,7 +310,7 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
         | form o == Box = (bName o, bName o) : getIn' (Just o) rest
         | otherwise     = getIn' Nothing rest
     getIn' (Just b) (TBlock o:rest)
-        | form o == Box = p : getIn' (Just o) rest
+        | form o == Box = p : (bName o, bName o) : getIn' (Just o) rest
         | otherwise     = p : getIn' (Just b) rest
       where p = (bName b, bName o)
     -- FIXME: What to do if there are multiple boxes? Currently the

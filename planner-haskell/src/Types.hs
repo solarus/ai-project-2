@@ -74,7 +74,6 @@ data Goal = G
     , getRightOf     :: [(Quantifier Block, Quantifier Block)]
     , getBeside      :: [(Quantifier Block, Quantifier Block)]
     , getHolding     :: [Block]
-    , getStackedSame :: [(Col, Block)]
     }
   deriving (Eq, Show)
 
@@ -82,7 +81,7 @@ isFloorTile (TFloorTile _) = True
 isFloorTile _              = False
 
 defaultGoal :: Goal
-defaultGoal = G [] [] [] [] [] [] [] [] []
+defaultGoal = G [] [] [] [] [] [] [] []
 
 getThings :: World -> [(Int, Thing)]
 getThings w = [ (c,b) | (c,bs) <- w, b <- bs ]

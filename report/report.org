@@ -88,7 +88,7 @@ $~$
 
 \section*{Abstract}
 \smallskip
-   \todo{TODO}
+   \todo{TODO} Batek
 \noindent \textbf{Keywords:} TODO
 
 
@@ -105,36 +105,35 @@ $~$
    \todo{TODO}
 
 ** Problem description
-   \todo{TODO}
+   \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
 ** Related work
-   \todo{TODO}
+   \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
 ** Available tools
-   \todo{TODO}
-\newpage
+   \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
 
 * Overview of the architecture
    \todo{TODO}
 
 ** Finished work
-   \todo{TODO}
+   \todo{TODO Predicates and Actins in STRIPS, World descr. and represenatation,
+              goal creation from fromgrammar tree/output }
 ** Work in progress
    Here, some parts that are still under development are touched upon.
+   \todo{TODO describe actions that do not work/work not as expected}
 
 *** Bug corrections
    \todo{TODO}
 
 ** Future work
+   \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
    This section mentions some of the many viable additions for the
    library which might further increase its usability.
 
 * Results and Evaluation
-   \todo{TODO}
+   \todo{TODO problem: "Besides Problem" two reds, blah blah...}
 
-* Discussion
-   \todo{TODO}
-
-* Conclusions
-   \todo{TODO}
+* Discussion and Conclusions
+   \todo{TODO Sum up your project, suggest future extensions and improvements.}
 
 \printbibliography
 

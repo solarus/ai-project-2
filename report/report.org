@@ -86,10 +86,14 @@ Controlling a Shrdlite robot \\ using Haskell
 $~$
 \vspace{4.3cm}
 
-\section*{Abstract}
+\section*{Abstract BARTEK}
 \smallskip
-   \todo{TODO} Batek
-\noindent \textbf{Keywords:} TODO
+   \todo{\textbf{SOME RULES:  While editing a section please put your name somewhere
+   visible and commit, when finished remove your name!}}
+
+
+
+\noindent \textbf{Keywords:}
 
 
 \addcontentsline{toc}{section}{Abstract}
@@ -106,9 +110,9 @@ $~$
 
 ** Problem description
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
-** Related work
+** Related work Bartek
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
-** Available tools
+** Available tools Bartek
    \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
 
 * Overview of the architecture

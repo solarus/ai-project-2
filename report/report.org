@@ -17,7 +17,6 @@
 #+LATEX_HEADER: \linespread{1.05} % Palatino needs more leading (space between lines)
 
 #+BEGIN_LATEX
-\hyphenation{Perceptron}
 
 \setlength{\parskip}{0.2cm}
 \setlength{\parindent}{0pt}
@@ -106,11 +105,39 @@ $~$
 \pagenumbering{arabic}
 
 * Introduction and Background
-   \todo{TODO}
+  This section gives an overview about the problem itself and describes the
+  algorithms, theorems and tools that were used during this project.
+  Furthermore, this section presents several alternative solutions for the
+  given problem, that were not used in the final solution, but took part in
+  the development process.
 
 ** Problem description
-   \note{Taken: Attila}
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
+
+   The problem consists of the implementation of planner for a robot arm in a
+   two-dimensional Shrdlite virtual
+   world. This robot arm can only pick up or drop an element at the same time.
+   The planner's task is to determine a sequence of the pick-up and drop
+   commands that leaves the virtual world in the required state defined by
+   the user.
+
+   The block elements have several properties, such us: form, color, size,
+   width and height. Depending on these properties, several rules exist
+   that exclude certain combinations of stacked objects. For instance, a
+   block cannot be placed on another block if it is greater than the other
+   block, or nothing can be placed on a ball or pyramid. Besides blocks, there
+   is a floor in the world which cannot be moved and nothing can be below it.
+
+   The elements and their positions in the initial world state are chosen
+   arbitrarily and hard-coded in the system. This initial state can be set to
+   any preferable state.
+
+   A command given by the user is first parsed by a grammar interpreter,
+   called GF. Then, before feeding the result to the planner, it must be
+   converted to a form that is compatible with the planner. In our case it
+   is written in Planning Domain Definition Language. Finally, the planner
+   gives back a list of pick and drop commands that provide the transition
+   between the current and goal state.
 ** Related work Bartek
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
 ** Available tools Bartek

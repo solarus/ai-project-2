@@ -109,6 +109,7 @@ $~$
    \todo{TODO}
 
 ** Problem description
+   \note{Taken: Attila}
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
 ** Related work Bartek
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}

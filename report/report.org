@@ -144,12 +144,23 @@ $~$
    \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
 
 * Overview of the architecture
-   \todo{TODO}
+   This section describes the parts of the project that has been finished,
+   currently under development, or just an idea waiting to be implemented.
+   Section~\ref{sec:finished} shows a detailed view about the current design
+   including the structure of the domain and problem file written in STRIPS,
+   the code level representation of the world, the goal creation process and
+   the interpretation of the parsed grammar tree. Section~\ref{sec:progress}
+   mainly contains the user commands that do not work as expected and,
+   therefore, these cases are still under investigation. Finally, section
+   \ref{sec:future} mentions some of the possibilities for further development.
 
 ** Finished work
+   \label{sec:finished}
    \todo{TODO Predicates and Actins in STRIPS, World descr. and represenatation,
               goal creation from fromgrammar tree/output }
+
 ** Work in progress
+   \label{sec:progress}
    Here, some parts that are still under development are touched upon.
    \todo{TODO describe actions that do not work/work not as expected}
 
@@ -175,6 +186,11 @@ $~$
 
 * Individual stories
 ** Attila Nagy
+   Code:
+   - move command
+
+   Report:
+   - Problem Description section,
 
 ** David Spångberg
 

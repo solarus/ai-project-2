@@ -20,8 +20,8 @@
 
 \setlength{\parskip}{0.2cm}
 \setlength{\parindent}{0pt}
-\newcommand{\note}[1]{{\color{blue} Note: \emph{#1}}}
-\newcommand{\todo}[1]{{\color{red} TODO: \emph{#1}}}
+\newcommand{\note}[1]{\emph{\color{blue} Note: #1}}
+\newcommand{\todo}[1]{\emph{\color{red} TODO: #1}}
 
 \definecolor{lightgrey}{gray}{0.9}
 \lstset

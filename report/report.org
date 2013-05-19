@@ -243,6 +243,56 @@ getQuantifier q = case q of
      floor" then the quantifier returned would be =Any=.
 
 **** Finding Things, Blocks and Locations
+     \todo{Maybe have this chapter before "Finding goals"?}
+
+     There are three basic types in the /shrdlite/ world: /things/,
+     /blocks/ and /locations/. A thing is one or many blocks or the
+     floor. A block is a either a description of a block consisting of
+     a form, a size and a color or a block paired with location. A
+     location is relative placement description, i.e. "left
+     of"/"above" etc, paired with a thing. As an example lets look at
+     the following command string and its resulting s-expression after
+     being parsed by GF: $$\text{"the white block to the left of any
+     red square"} \Longrightarrow$$ $$\texttt{(the (thatis (block \_ \_
+     white) (leftof (any (block square \_ red)))))}$$ /the/ is one of
+     the constructors to lift a block into a thing[fn:1]. /thatis/ is
+     the constructor which takes a block and a location and produces a
+     new block. To find all things which matches this description the
+     complete s-expression is sent to =findThings=. Since the
+     constructor =the= is used there must also be a block description
+     which is sent to =findBlocks=.
+\begin{haskell}
+findBlocks :: World -> SExpr -> [(Col, Thing)]
+findBlocks world (List [Atom "thatis", blockDescr, locDescr]) = intersect blocks locs
+  where
+    blocks = findBlocks world blockDescr
+    locs   = findLocations world locDescr
+findBlocks world (List [Atom "block", Atom form, Atom size, Atom color]) =
+    map (second TBlock) . formFilter . sizeFilter . colFilter $ allBlocks
+  where
+    allBlocks = getBlocks world
+    ...
+\end{haskell}
+     In this function we find that the top most constructor used is
+     =thatis= and we must therefore also have one more block- and
+     location description. Recursively calling =findBlocks= with the
+     block description =(block _ _ white)= returns all white blocks in
+     the current world. Now =findLocations= is called with =(above
+     (any (block _ _ blue)))= finding all things which matches this
+     particular location description. Finally the intersection of the
+     results from the recursive call and the call to =findLocations=
+     is the final result of this particular call to =findBlocks=.
+
+     For example when the parse tree mentioned above is given to
+     =findThings= in the world seen in figure \ref{fig:shrdlite-small}
+     the returned thing would be the white ball on top of the tall
+     blue block.
+
+     #+CAPTION: Small shrdlite world with three different blocks.
+     #+LABEL: fig:shrdlite-small
+     #+ATTR_LATEX: scale=1
+     [[./images/smallworld.png]]
+
 
 **** Generating a STRIPS problem
 
@@ -294,3 +344,5 @@ getQuantifier q = case q of
    consider too important to leave out.}
 
 * Footnotes
+
+[fn:1] The other two are /any/ and /all/.

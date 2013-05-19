@@ -156,8 +156,98 @@ $~$
 
 ** Finished work
    \label{sec:finished}
-   \todo{TODO Predicates and Actins in STRIPS, World descr. and represenatation,
-              goal creation from fromgrammar tree/output }
+
+   On a very high level, the implementation consists of three parts:
+   - Parsing and simplifying a natural language command from the user
+     using /GF/ \cite{gf}.
+   - Transforming a world state and a simplified command into a goal
+     and then transforming the same world state and goal into a
+     /STRIPS/-problem.
+   - Using the /metric-ff/ planner to extract a plan for the given
+     problem.
+   The following sections will examine our solutions for each of these
+   problems in detail.
+
+*** Parsing
+    \label{sec:parsing}
+
+    \todo{talk about GF and the shrdlite grammar?}
+
+*** Goal/Problem generation
+    \label{sec:goal-gen}
+
+    \emph{All functions in the following sections belongs to the
+    \texttt{Planner} module (if not stated otherwise).}
+
+**** Finding goals
+     \todo{We might need an s-expression introduction since we
+     talk about s-expressions here.}
+
+     The implementation of the goal finding functions closely follows
+     the structure of the /shrdlite/ grammar mentioned in the previous
+     section. A parse tree from a user command start with either a
+     =take=, =put= or =move= atom where the first two commands has
+     exactly one argument, a thing- or a location-description
+     respectively. The =move= command is a bit more powerful and takes
+     both a thing- and location-description as arguments. The function
+     =tryGoal= only matches this first command token and delegates the
+     responsibility of producing a goal to =tryTake=, =tryPut= or
+     =tryMove= respectively. Below =tryMove= is examined since this is
+     enough to understand the implementation of the other two
+     functions.
+\begin{haskell}
+tryMove :: SExpr -> Reader State (Maybe Goal)
+tryMove (List [src, List [Atom loc, dst]]) = do
+    (_,world) <- ask
+    let s = findThings world src
+        d = findThings world dst
+        qSrc = getQuantifier src
+        qDst = getQuantifier dst
+        goalList f = [(qSrc (map (thingToBlock . snd) s), qDst (map (f . snd) d))]
+    return $ Just $ case loc of
+        "beside"  -> defaultGoal { getBeside  = goalList thingToBlock }
+        "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock }
+        "rightof" -> defaultGoal { getRightOf = goalList thingToBlock }
+        "above"   -> defaultGoal { getAbove   = goalList id }
+        "ontop"   -> defaultGoal { getOn      = goalList id }
+        "under"   -> defaultGoal { getUnder   = goalList thingToBlock }
+        "inside"  -> defaultGoal { getIn      = goalList thingToBlock }
+\end{haskell}
+     The sole argument to =tryMove= is an s-expression list containing
+     exactly two elements, a thing description and a location
+     description. On line 4 =s= will be a list of all things in the
+     current world matching the thing description found in =src=. On
+     the next line =d= will be a list of all things matching the thing
+     description =dst=. Note that we are only interested in finding
+     the things matching the thing description (=dst=) of the location
+     description (=List [Atom loc, dst]=) and not the things that
+     matches the whole location description. This is the case since
+     the relative position to any of the things matching =dst= is
+     directly encoded in the =Goal= data type using one of the fields
+     of the data type as can be seen on lines 10 through 16. Finally
+     =getQuantifier= is used to get the quantifier used in the
+     construction of the goal.
+\begin{haskell}
+getQuantifier :: SExpr -> [a] -> Quantifier a
+getQuantifier q = case q of
+    List (Atom "the" : _) -> \[x] -> The x
+    List (Atom "all" : _) -> All
+    -- This matches any and floor
+    _                     -> Any
+\end{haskell}
+     Basically =getQuantifier= returns the quantifier used in the user
+     command. I.e. if the original command was "put any block on the
+     floor" then the quantifier returned would be =Any=.
+
+**** Finding Things, Blocks and Locations
+
+**** Generating a STRIPS problem
+
+**** Putting it all together
+     \todo{Show how an example goal is computed from a command string}
+
+*** Finding a plan
+    \label{sec:planning}
 
 ** Work in progress
    \label{sec:progress}

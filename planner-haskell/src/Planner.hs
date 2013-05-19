@@ -113,7 +113,7 @@ tryPut (List [Atom loc, thingDescr]) = do
 tryPut e = error ("Planner.tryPut: This should not happen!" ++ show e)
 
 tryMove :: SExpr -> Reader State (Maybe Goal)
-tryMove (List [ src, List[ Atom loc,  dst]]) = do
+tryMove (List [src, List [Atom loc, dst]]) = do
     (_,w) <- ask
     let d = findThings w dst
         s = findThings w src

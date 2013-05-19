@@ -7,6 +7,9 @@
 #+LATEX_HEADER: \usepackage{fullpage,xcolor,listings, algpseudocode, algorithm}
 #+LATEX_HEADER: \usepackage[style=alphabetic,citestyle=alphabetic]{biblatex}
 #+LATEX_HEADER: \addbibresource{references.bib}
+#+LATEX_HEADER: \let\iint\relax
+#+LATEX_HEADER: \let\iiint\relax
+#+LATEX_HEADER: \usepackage{amsmath}
 
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{calc,3d}

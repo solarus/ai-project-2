@@ -188,7 +188,7 @@ $~$
 
     \todo{talk about GF and the shrdlite grammar?}
 
-    The Grammar Framework plays a vital role in this project. It parses the
+    The Grammatical Framework plays a vital role in this project. It parses the
     command given by the user and builts a tree structure for the planner. For
     the representation of this tree, a tree-structured nested data list,
     called s-expression, was used. Its implementation is relatively simple and
@@ -241,7 +241,7 @@ $~$
 \end{alltt}
 
     This bnf form tells all the possible combination of words that was
-    produced by the Grammar Framework and the problem generator must
+    produced by the Grammatical Framework and the problem generator must
     be able to interpret.
 
 *** S-expression
@@ -482,9 +482,38 @@ findLocations world (List [Atom loc, thingDescr]) =
 
 ** Future work
    \label{sec:future}
+   This section mentions only a subset of the viable additions for the
+   project which might further increase its usability.
+
    \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
-   This section mentions some of the many viable additions for the
-   library which might further increase its usability.
+
+*** Plan-pruning
+    It can happen that the planner does not produce a perfect plan. Several
+    consequitve state end up in a state that was reached earlier. In this case
+    a these steps are superflous and can be removed.
+
+    A basic form of this pruning was implemented in the current
+    project which can be further improved. Currently it only checks if a
+    consequtive pick and drop commands happen on the same column. The more
+    advanced form of this pruning would be to go through the whole list of
+    commands and check if the world state that this command leads was reached
+    earlier. If it was, then the list of commands can be deleted back to this
+    earlier state. For instance, the 'A -> B -> ... -> B' list of states can
+    be reduced to 'A -> B'.
+
+*** First Order Logic
+    After some fruitless experimentation with a FOL planner, the so-called
+    E-prover, ff-metric was chosen for planning. This decision was based on
+    its significantly higher running time and hardship of goal interpretation.
+    However, in the long run E-prover might produce more appealling
+    results with a simplier problem description form.
+
+*** Generating FOL to STRIPS
+    Another possible solution for planning can be to merge FOL with STRIPS
+    combining their positive features. By this, a planner can be gained that is
+    endowed by easy goal generation and provide effortless extenasibility for
+    future grammar. Unfortunately, there was no time for experimentations in
+    this field, and, therefore, it remained only an idea.
 
 * Results and Evaluation
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}

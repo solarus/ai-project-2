@@ -245,18 +245,19 @@ getQuantifier q = case q of
      /blocks/ and /locations/. A thing is one or many blocks or the
      floor. A block is a either a description of a block consisting of
      a form, a size and a color or a block paired with location. A
-     location is relative placement description, i.e. "left
-     of"/"above" etc, paired with a thing. As an example lets look at
-     the following command string and its resulting s-expression after
-     being parsed by GF: $$\text{"the white block to the left of any
-     red square"} \Longrightarrow$$ $$\texttt{(the (thatis (block \_ \_
-     white) (leftof (any (block square \_ red)))))}$$ /the/ is one of
-     the constructors to lift a block into a thing[fn:1]. /thatis/ is
-     the constructor which takes a block and a location and produces a
-     new block. To find all things which matches this description the
-     complete s-expression is sent to =findThings=. Since the
-     constructor =the= is used there must also be a block description
-     which is sent to =findBlocks=.
+     location is relative placement description, i.e.
+     \hbox{\emph{"left of"}/\emph{"above"}} etc, paired with a thing. As an
+     example lets look at the following command string and its
+     resulting s-expression after being parsed by GF: $$\text{"the
+     white block to the left of any red square"} \Longrightarrow$$
+     $$\texttt{(the (thatis (block \_ \_ white) (leftof (any (block
+     square \_ red)))))}$$ /the/ is one of the constructors to lift a
+     block into a thing[fn:1]. /thatis/ is the constructor which takes
+     a block and a location and produces a new block. To find all
+     things which matches this description the complete s-expression
+     is sent to =findThings=. Since the constructor =the= is used
+     there must also be a block description which is sent to
+     =findBlocks=.
 \begin{haskell}
 findBlocks :: World -> SExpr -> [(Col, Thing)]
 findBlocks world (List [Atom "thatis", blockDescr, locDescr]) = intersect blocks locs
@@ -273,22 +274,68 @@ findBlocks world (List [Atom "block", Atom form, Atom size, Atom color]) =
      =thatis= and we must therefore also have one more block- and
      location description. Recursively calling =findBlocks= with the
      block description =(block _ _ white)= returns all white blocks in
-     the current world. Now =findLocations= is called with =(above
-     (any (block _ _ blue)))= finding all things which matches this
-     particular location description. Finally the intersection of the
-     results from the recursive call and the call to =findLocations=
-     is the final result of this particular call to =findBlocks=.
+     the current world. Now =findLocations= is called with =(leftof
+     (any (block square _ red)))= finding all things which matches
+     this particular location description. Finally the intersection of
+     the results from the recursive call and the call to
+     =findLocations= is the final result of this particular call to
+     =findBlocks=.
 
-     For example when the parse tree mentioned above is given to
-     =findThings= in the world seen in figure \ref{fig:shrdlite-small}
-     the returned thing would be the white ball on top of the tall
-     blue block.
+     As an example consider the case when the parse tree mentioned
+     above is given to =findThings= in the world seen in figure
+     \ref{fig:shrdlite-small}.
 
-     #+CAPTION: Small shrdlite world with three different blocks.
+     #+CAPTION: Small shrdlite world with four different blocks.
      #+LABEL: fig:shrdlite-small
      #+ATTR_LATEX: scale=1
      [[./images/smallworld.png]]
 
+     1. =findThings= will only remove the "the" from the parse tree and
+       call =findBlocks= with the rest of the tree.
+     2. =findBlocks= will recursively call itself with =(block _ _
+        white)= and =findLocations= with =(leftof (any (block square _
+        red)))=.
+        1. =findBlocks (block _ _ white)= will return the two white
+           blocks in the world.
+        2. =findLocations (leftof (any (block square _ red)))= will
+           call =findThings (any (block square _ red))= which in turn
+           will return the large red square. Now since the constructor
+           used to create the location description is =leftof= all
+           things in the world to the left of the returned red block
+           will be returned, in this case the white ball and the blue
+           rectangle and also two /floor tiles/ will be returned, one
+           floor tile right below the two blocks and one tile on the
+           empty space to the left of these blocks. The floor tiles
+           can be seen as immovable blocks at the bottom of every
+           column in the world.
+        3. Now finally the intersection of =findBlocks= and
+           =findLocations= is the returned value for the top most
+           =findBlocks= call. This intersection will contain a list of
+           exactly one element, namely the white ball.
+
+     Finally the last function that needs to be explained is
+     =findLocations=.
+
+\begin{haskell}
+findLocations :: World -> SExpr -> [(Col, Thing)]
+findLocations world (List [Atom loc, thingDescr]) =
+    let things = findThings world thingDescr
+        Atom s = car thingDescr
+    in case loc of
+        ...
+        "leftof"  -> let maxIdxFun = if s == "all" then minimum else maximum
+                         idxs   = [0 .. maxIdxFun (map fst things)]
+                     in concatMap (allThingsAtCol world) idxs
+        ...
+\end{haskell}
+
+     At line 3 =things= will be bound to the list of things which
+     matches the current thing description. Line 7 to 9 shows the
+     particular case when we want to return things to the left of all
+     or any of the returned things. When /all/ is used in
+     =thingDescr=, the minimum column number is taken from column
+     indexes in =map fst things=. If /any/ or /the/ is used than the
+     maximum column index is returned instead.[fn:2]
 
 **** Generating a STRIPS problem
 
@@ -342,3 +389,12 @@ findBlocks world (List [Atom "block", Atom form, Atom size, Atom color]) =
 * Footnotes
 
 [fn:1] The other two are /any/ and /all/.
+
+[fn:2] If /the/ is used then =things= will have exactly length one and
+it doesn't matter if we use =minimum= or =maximum=. However if we have
+something like =(leftof floor)=, which is valid according to the
+grammar, then this will currently result in a pattern match error on
+line 4. To fix this the return type of =findLocations=, and
+consequently the return type of all =find*= functions, can for
+instance be changed to =Error [(Col, Thing)]= and then a descriptive
+error message can be returned instead.

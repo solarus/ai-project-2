@@ -88,14 +88,23 @@ Controlling a Shrdlite robot \\ using Haskell
 $~$
 \vspace{4.3cm}
 
-\section*{Abstract BARTEK}
+\section*{Abstract}
 \smallskip
-   \todo{\textbf{SOME RULES:  While editing a section please put your name somewhere
-   visible and commit, when finished remove your name!}}
+  Automated planning and scheduling have many obvious application i real-life
+  areas of bussiness. One such imaginable planner, is one that arranges a set of
+  objects in an abstract \emph{world} that perhaps models a factory floor or a harbor
+  loading area where the task is to move specific cago crates from one spot to
+  another.
 
+  Here a simplified version af such a planner is implemented, the most important
+  simplifications being that dimensionas of the world are restricted to two and
+  that while the commands to the plannaer are given in plain English, the
+  grammar that the scheduler is able to parse is quite simple.
 
+  The application is inspired by the much more complex system described in Terry
+  Winograd's PhD thesis \cite{win1970shrdlu}.
 
-\noindent \textbf{Keywords:}
+\noindent \textbf{Keywords: Automated planning, SHRDLU, PDDL, STRIPS}
 
 
 \addcontentsline{toc}{section}{Abstract}

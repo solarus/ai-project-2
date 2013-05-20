@@ -4,7 +4,7 @@
 #+LANGUAGE:  en
 #+OPTIONS:   H:4 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
-#+LATEX_HEADER: \usepackage{fullpage,xcolor,listings, algpseudocode, algorithm}
+#+LATEX_HEADER: \usepackage{fullpage,xcolor,listings, algpseudocode, algorithm, xspace}
 #+LATEX_HEADER: \usepackage[style=alphabetic,citestyle=alphabetic]{biblatex}
 #+LATEX_HEADER: \addbibresource{references.bib}
 #+LATEX_HEADER: \let\iint\relax
@@ -21,6 +21,7 @@
 #+LATEX_HEADER: \linespread{1.05} % Palatino needs more leading (space between lines)
 
 #+BEGIN_LATEX
+\newcommand{\shrdlite}[0]{\textsc{SHRDLite}\xspace}
 
 \setlength{\parskip}{0.2cm}
 \setlength{\parindent}{0pt}
@@ -68,7 +69,7 @@ xleftmargin=10pt
 \vspace{5cm}
 
 \huge
-Controlling a Shrdlite robot \\ using Haskell
+Controlling a \shrdlite robot \\ using Haskell
 \\\Large \vspace{0.5cm} Group 14
 
 \vspace{0.5cm}
@@ -129,7 +130,7 @@ $~$
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
 
    The problem consists of the implementation of planner for a robot arm in a
-   two-dimensional Shrdlite virtual
+   two-dimensional \shrdlite virtual
    world. This robot arm can only pick up or drop an element at the same time.
    The planner's task is to determine a sequence of the pick-up and drop
    commands that leaves the virtual world in the required state defined by
@@ -257,7 +258,7 @@ $~$
      talk about s-expressions here.}
 
      The implementation of the goal finding functions closely follows
-     the structure of the /shrdlite/ grammar mentioned in the previous
+     the structure of the \shrdlite grammar mentioned in the previous
      section. A parse tree from a user command start with either a
      =take=, =put= or =move= atom where the first two commands has
      exactly one argument, a thing- or a location-description
@@ -311,7 +312,7 @@ getQuantifier q = case q of
 **** Finding Things, Blocks and Locations
      \todo{Maybe have this chapter before "Finding goals"?}
 
-     There are three basic types in the /shrdlite/ world: /things/,
+     There are three basic types in the \shrdlite world: /things/,
      /blocks/ and /locations/. A thing is one or many blocks or the
      floor. A block is a either a description of a block consisting of
      a form, a size and a color or a block paired with a location. A
@@ -355,7 +356,7 @@ findBlocks world (List [Atom "block", Atom form, Atom size, Atom color]) =
      above is given to =findThings= in the world seen in figure
      \ref{fig:shrdlite-small}.
 
-     #+CAPTION: Small shrdlite world with four different blocks.
+     #+CAPTION: Small \shrdlite world with four different blocks.
      #+LABEL: fig:shrdlite-small
      #+ATTR_LATEX: scale=1
      [[./images/smallworld.png]]
@@ -414,7 +415,7 @@ findLocations world (List [Atom loc, thingDescr]) =
 
      When we have parsed the user command and generated a goal the
      only thing left to do in this part is to generate a =PDDL=
-     problem, i.e. a representation of the shrdlite world and the
+     problem, i.e. a representation of the \shrdlite world and the
      current goal which can be understood by the planner. This
      representation is actually split up in two different parts, a
      domain specification and a problem description. The domain
@@ -423,7 +424,7 @@ findLocations world (List [Atom loc, thingDescr]) =
      description, discussed below, is specific for goal and world
      state.
 
-     The shrdlite domain and the possible actions that can be
+     The \shrdlite domain and the possible actions that can be
      performed in this domain is expressed in a =PDDL= domain file
      which can be seen in appendix \ref{sec:shrdlite-dom}. This file
      contains two things: predicates with zero or more arguments
@@ -433,7 +434,7 @@ findLocations world (List [Atom loc, thingDescr]) =
      predicates can be used as preconditions to actions and also for
      specifying goal states.
 
-\begin{lstlisting}[language=haskell, caption=The action \texttt{set-inside} as defined in the SHRDLite domain file., label=lst:set-inside]
+\begin{lstlisting}[language=haskell, caption=The action \texttt{set-inside} as defined in the \shrdlite domain file., label=lst:set-inside]
 ;; `x' is inside `box' if `y' is inside `box' and `x' is on `y'
 (:action set-inside
  :parameters   (?x ?y ?box)
@@ -494,7 +495,7 @@ findLocations world (List [Atom loc, thingDescr]) =
 
 \newpage
 
-* Shrdlite PDDL domain file
+* SHRDLite PDDL domain file
   \label{sec:shrdlite-dom}
 
   \vspace{1cm}

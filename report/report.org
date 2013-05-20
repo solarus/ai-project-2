@@ -470,6 +470,8 @@ findLocations world (List [Atom loc, thingDescr]) =
 * Shrdlite PDDL domain file
   \label{sec:shrdlite-dom}
 
+  \vspace{1cm}
+
 \begin{haskell}
 (define (domain shrdlu)
   (:functions (moves))
@@ -515,10 +517,8 @@ findLocations world (List [Atom loc, thingDescr]) =
                       (on ?obj ?to)
                       (stacked-on ?obj ?col)
                       (increase (moves) 1)))
-
-
-
-  ;; set the flag that the object is above some other objects
+  ;; 'first' is above both 'second' and 'under' if 'second' is above 'under' and 'first'
+  ;;  is on 'second'
   (:action set-above
    :parameters (?first ?second ?under)
    :precondition (and (on ?first ?second)

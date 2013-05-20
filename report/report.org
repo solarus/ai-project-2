@@ -253,8 +253,8 @@ getQuantifier q = case q of
      There are three basic types in the /shrdlite/ world: /things/,
      /blocks/ and /locations/. A thing is one or many blocks or the
      floor. A block is a either a description of a block consisting of
-     a form, a size and a color or a block paired with location. A
-     location is relative placement description, i.e.
+     a form, a size and a color or a block paired with a location. A
+     location is a relative placement description, i.e.
      \hbox{\emph{"left of"}/\emph{"above"}} etc, paired with a thing. As an
      example lets look at the following command string and its
      resulting s-expression after being parsed by GF: $$\text{"the

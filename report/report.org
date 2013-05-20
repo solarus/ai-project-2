@@ -460,6 +460,11 @@ findLocations world (List [Atom loc, thingDescr]) =
 **** Generating a PDDL problem                                        :david:
      $~$
 
+     The last step before giving handing over the responsibility to
+     the planner is to generate a =PDDL= problem file. This file
+     contains the initial or current state of the world encoded using
+     the predicates found in the \shrdlite grammar in appendix
+     \ref{sec:shrdlite-dom}.
 
 **** Putting it all together
      \todo{Show how an example goal is computed from a command string}

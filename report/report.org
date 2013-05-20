@@ -95,9 +95,9 @@ $~$
 \smallskip
   Automated planning and scheduling have many obvious application i real-life
   areas of bussiness. One such imaginable planner, is one that arranges a set of
-  objects in an abstract \emph{world} that perhaps models a factory floor or a harbor
-  loading area where the task is to move specific cago crates from one spot to
-  another.
+  objects in an abstract \emph{world} that perhaps models a factory floor or a
+  harbor loading area where the task is to move specific cago crates from one
+  spot to another.
 
   Here a simplified version af such a planner is implemented, the most important
   simplifications being that dimensionas of the world are restricted to two and
@@ -108,7 +108,6 @@ $~$
   Winograd's PhD thesis \cite{win1970shrdlu}.
 
 \noindent \textbf{Keywords: Automated planning, SHRDLU, PDDL, STRIPS}
-
 
 \addcontentsline{toc}{section}{Abstract}
 #+END_LATEX
@@ -146,14 +145,25 @@ $~$
    arbitrarily and hard-coded in the system. This initial state can be set to
    any preferable state.
 
+<<<<<<< HEAD
    A command given by the user is first parsed by a grammar interpreter, called
    GF. Then, before feeding the result to the planner, it must be converted to a
    form that is compatible with the planner. In our case it is written in
    Planning Domain Definition Language. Finally, the planner gives back a list
    of pick and drop commands that provide the transition between the current and
    goal state.
+=======
+   A command given by the user is first parsed by a grammar interpreter,
+   called GF. Then, before feeding the result to the planner, it must be
+   converted to a form that is compatible with the planner. In our case it
+   is written in Planning Domain Definition Language. Finally, the planner
+   gives back a list of pick and drop commands that provide the transition
+   between the current and goal state.
+
+>>>>>>> Some changes
 ** Related work Bartek
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
+
 ** Available tools Bartek
    \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
 

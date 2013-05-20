@@ -280,7 +280,6 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
     blockNames = map bName allBlocks
     floorTiles = map (('f':) . show) [0 .. length iWorld-1]
 
-
     tellSexp ls = line ("(" ++ intercalate " " ls ++ ")")
     tellSmaller (o1,o2) = tellSexp ["smaller", o1, o2]
     indentStep n = mapWriter (\(a,w) -> (a, map (replicate n ' '++) w))

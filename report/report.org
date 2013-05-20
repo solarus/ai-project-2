@@ -209,11 +209,7 @@ tryMove (List [src, List [Atom loc, dst]]) = do
         goalList f = [(qSrc (map (thingToBlock . snd) s), qDst (map (f . snd) d))]
     return $ Just $ case loc of
         "beside"  -> defaultGoal { getBeside  = goalList thingToBlock }
-        "leftof"  -> defaultGoal { getLeftOf  = goalList thingToBlock }
-        "rightof" -> defaultGoal { getRightOf = goalList thingToBlock }
-        "above"   -> defaultGoal { getAbove   = goalList id }
-        "ontop"   -> defaultGoal { getOn      = goalList id }
-        "under"   -> defaultGoal { getUnder   = goalList thingToBlock }
+        ...
         "inside"  -> defaultGoal { getIn      = goalList thingToBlock }
 \end{haskell}
      The sole argument to =tryMove= is an s-expression list containing

@@ -414,12 +414,11 @@ findLocations world (List [Atom loc, thingDescr]) =
                (on ?x ?y)          ;; 'x' is on top of 'y'
                (box ?x)            ;; 'x' is a box
                (inside ?x ?y)      ;; 'x' is inside box 'y'
-               (inside-any ?x)     ;; 'x' is inside some box
                (smaller ?x ?y)     ;; 'x' is smaller than 'y'
                (stacked-on ?x ?c)  ;; 'x' is stacked on column 'c'
                (holding-any)       ;; the arm is holding something
                (holding ?x)        ;; 'x' is up in the air
-               (frozen ?x)         ;; cant move anything after that
+               (frozen ?x)         ;; 'x' is frozen and cant be moved
                (above ?x ?y)       ;; 'x' is somewhere above 'y'
                (under ?x ?y)       ;; 'x' is somewhere under 'y'
                (left-of ?x ?y)     ;; 'x' is somewhere left of 'y'
@@ -453,6 +452,8 @@ findLocations world (List [Atom loc, thingDescr]) =
                       (stacked-on ?obj ?col)
                       (increase (moves) 1)))
 
+
+
   ;; set the flag that the object is above some other objects
   (:action set-above
    :parameters (?first ?second ?under)
@@ -471,7 +472,8 @@ findLocations world (List [Atom loc, thingDescr]) =
                       (under ?first ?above)
                       (frozen ?above)))
 
-  ;; `x' and `y' are left- and right of each other if `x' is stacked on a floor column to the left of `y'
+  ;; `x' and `y' are left- and right of each other if `x' is stacked on a floor column
+  ;; to the left of `y'
   (:action set-left-right
    :parameters (?x ?y ?left-floor ?right-floor)
    :precondition (and (stacked-on ?x ?left-floor)
@@ -499,9 +501,7 @@ findLocations world (List [Atom loc, thingDescr]) =
    :precondition (and (inside ?y ?box)
                       (on ?x ?y))
    :effect       (and (inside ?x ?box)
-                      (frozen ?x)))
-
-)
+                      (frozen ?x))))
 \end{haskell}
 
 * Individual stories

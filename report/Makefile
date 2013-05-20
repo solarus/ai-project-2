@@ -6,3 +6,4 @@ clean:
 	rm -f texput.{fls,log}
 	rm -f report-blx.bib
 	rm -f *converted-to.pdf
+	rm -f report.pdf

@@ -14,6 +14,7 @@
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{calc,3d}
 
+#+LATEX_HEADER: \usepackage{alltt}
 # #### Palatino font
 #+LATEX_HEADER: \usepackage[sc]{mathpazo}
 #+LATEX_HEADER: \usepackage[T1]{fontenc}
@@ -25,6 +26,7 @@
 \setlength{\parindent}{0pt}
 \newcommand{\note}[1]{\emph{\color{blue} Note: #1}}
 \newcommand{\todo}[1]{\emph{\color{red} TODO: #1}}
+\renewcommand{\ttdefault}{txtt}
 
 \definecolor{lightgrey}{gray}{0.9}
 \lstset
@@ -184,6 +186,65 @@ $~$
     \label{sec:parsing}
 
     \todo{talk about GF and the shrdlite grammar?}
+
+    The Grammar Framework plays a vital role in this project. It parses the
+    command given by the user and builts a tree structure for the planner. For
+    the representation of this tree, a tree-structured nested data list,
+    called s-expression, was used. Its implementation is relatively simple and
+    described in details in section \ref{sec:sexpr}.
+
+    The structure of the parse tree is represented by the following
+    Backus–Naur Form:
+\begin{alltt}
+    \textbf{Command} ::= "take" Thing
+              | "put"  Location
+              | "move" Thing Location
+
+    \textbf{Location} ::= "beside" Thing
+               | "leftof" Thing
+               | "rightof" Thing
+               | "above" Thing
+               | "ontop" Thing
+               | "under" Thing
+               | "inside" Thing
+
+    \textbf{Thing} ::= "the" Block
+            | "any" Block
+            | "all" Block
+            | "floor"
+
+    \textbf{Block} ::= "block" Form Size Color
+            | "thatis" Block Location
+
+    \textbf{Size} ::= "anysize"
+           | "small"
+           | "medium"
+           | "large"
+           | "wide"
+           | "tall"
+
+    \textbf{Color} ::= "anycolor"
+            | "black"
+            | "white"
+            | "blue"
+            | "green"
+            | "yellow"
+            | "red"
+
+    \textbf{Form} ::= "anyblock"
+           | "box"
+           | "pyramid"
+           | "rectangle"
+           | "square"
+           | "ball"
+\end{alltt}
+
+    This bnf form tells all the possible combination of words that was
+    produced by the Grammar Framework and the problem generator must
+    be able to interpret.
+
+*** S-expression
+    \label{sec:sexpr}
 
 *** Goal/Problem generation
     \label{sec:goal-gen}
@@ -346,7 +407,8 @@ findLocations world (List [Atom loc, thingDescr]) =
      indexes in =map fst things=. If /any/ or /the/ is used than the
      maximum column index is returned instead.[fn:2]
 
-**** Shrdlite PDDL domain                                             :david:
+**** Shrdlite PDDL domain
+     :david:
      $~$
 
      \todo{move some of the text here to the top of \ref{sec:goal-gen}}
@@ -366,7 +428,8 @@ findLocations world (List [Atom loc, thingDescr]) =
      performed in this domain is expressed in a =PDDL= domain file
      which can be seen in section \ref{sec:shrdlite-dom}.
 
-**** Generating a PDDL problem                                        :david:
+**** Generating a PDDL problem
+     :david:
      $~$
 
 
@@ -385,6 +448,7 @@ findLocations world (List [Atom loc, thingDescr]) =
    \todo{TODO}
 
 ** Future work
+   \label{sec:future}
    \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
    This section mentions some of the many viable additions for the
    library which might further increase its usability.

@@ -255,8 +255,8 @@ getQuantifier q = case q of
      floor. A block is a either a description of a block consisting of
      a form, a size and a color or a block paired with a location. A
      location is a relative placement description, i.e.
-     \hbox{\emph{"left of"}/\emph{"above"}} etc, paired with a thing. As an
-     example lets look at the following command string and its
+     \hbox{\emph{"left of"}/\emph{"above"}} etc, paired with a thing.
+     As an example lets look at the following command string and its
      resulting s-expression after being parsed by GF: $$\text{"the
      white block to the left of any red square"} \Longrightarrow$$
      $$\texttt{(the (thatis (block \_ \_ white) (leftof (any (block

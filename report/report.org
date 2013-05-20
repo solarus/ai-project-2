@@ -145,24 +145,33 @@ $~$
    arbitrarily and hard-coded in the system. This initial state can be set to
    any preferable state.
 
-<<<<<<< HEAD
    A command given by the user is first parsed by a grammar interpreter, called
    GF. Then, before feeding the result to the planner, it must be converted to a
    form that is compatible with the planner. In our case it is written in
    Planning Domain Definition Language. Finally, the planner gives back a list
    of pick and drop commands that provide the transition between the current and
    goal state.
-=======
-   A command given by the user is first parsed by a grammar interpreter,
-   called GF. Then, before feeding the result to the planner, it must be
-   converted to a form that is compatible with the planner. In our case it
-   is written in Planning Domain Definition Language. Finally, the planner
-   gives back a list of pick and drop commands that provide the transition
-   between the current and goal state.
 
->>>>>>> Some changes
 ** Related work Bartek
+
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
+
+   World described above is two-dimensional, it is much more simplified verision
+   of a three-dimensional block world implemented by Terry Winograd in late
+   1960s and dscribed in his dissertation \cite{win1970shrdlu}.
+
+   #+CAPTION: The original SHRDLU,  in action on PDP-6 computer.
+   #+LABEL: fig:shrdlu3d
+   #+ATTR_LATEX: width=0.38\textwidth wrap placement={Hr}{0.4\textwidth}
+   [[./images/shrdlu_3d.png]]
+
+   Winograd´s planner called SHRDLU, allowed user interaction using simple
+   English phrases, to operate in a three-dimensional world. It was also able to
+   answer simple questions about the world such as "What does the green box
+   contain?" and memorize names of the world's elemenets.
+
+   SHRDLU in action can be seen in Figue \ref{fig:shrdlu3d} and in the videos
+   available on-line [fn:3].
 
 ** Available tools Bartek
    \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
@@ -499,7 +508,7 @@ findLocations world (List [Atom loc, thingDescr]) =
 
 *** Plan-pruning
     It can happen that the planner does not produce a perfect plan. Several
-    consecutive states end up in a state that was reached earlier. In this case 
+    consecutive states end up in a state that was reached earlier. In this case
     these steps are superfluous and can be removed.
 
     A basic form of this pruning was implemented in the current project which
@@ -652,6 +661,7 @@ findLocations world (List [Atom loc, thingDescr]) =
 ** David Spångberg
 
 ** Bartolomeus Jankowski
+
 * Other
    \note{Here you include all other information and documentation that
    did not fit into the report in the above sections but that you
@@ -669,3 +679,5 @@ line 4. To fix this the return type of =findLocations=, and
 consequently the return type of all =find*= functions, can for
 instance be changed to =Error [(Col, Thing)]= and then a descriptive
 error message can be returned instead.
+
+[fn:3] [[http://projects.csail.mit.edu/video/history/aifilms/26-robot.mp4]]

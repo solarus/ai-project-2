@@ -153,9 +153,9 @@ findLocations w (List [Atom loc, thingDescr]) =
     in case loc of
         "beside"  -> let idxs = nub [i' | (i, _) <- things, i' <- [i-1, i+1], i >= 0, i < length w]
                      in concatMap (allThingsAtCol w) idxs
-        "leftof"  -> let idxs = nub [i' | (i, _) <- things, i' <- [0 .. i-1], i < length w]
+        "leftof"  -> let idxs = nub [i' | (i, _) <- things, i' <- [0 .. i-1]]
                      in concatMap (allThingsAtCol w) idxs
-        "rightof" -> let idxs = nub [i' | (i, _) <- things, i' <- [i+1 .. (length w) - 1], i >= 0]
+        "rightof" -> let idxs = nub [i' | (i, _) <- things, i' <- [i+1 .. (length w) - 1]]
                      in concatMap (allThingsAtCol w) idxs
         "above"   -> let allAboveThing (c, t) = map (c, ) . tail . dropWhile (/=t) . snd $ w!!c
                      in nub $ concatMap allAboveThing things

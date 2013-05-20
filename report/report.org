@@ -408,7 +408,6 @@ findLocations world (List [Atom loc, thingDescr]) =
      maximum column index is returned instead.[fn:2]
 
 **** Shrdlite PDDL domain
-     :david:
      $~$
 
      \todo{move some of the text here to the top of \ref{sec:goal-gen}}
@@ -426,10 +425,38 @@ findLocations world (List [Atom loc, thingDescr]) =
 
      The shrdlite domain and the possible actions that can be
      performed in this domain is expressed in a =PDDL= domain file
-     which can be seen in section \ref{sec:shrdlite-dom}.
+     which can be seen in appendix \ref{sec:shrdlite-dom}. This file
+     contains two things: predicates with zero or more arguments
+     specifying properties of the objects in the world, and actions
+     defining all available operations on objects. The actions are
+     used to change one or more properties of a object, while the
+     predicates can be used as preconditions to actions and also for
+     specifying goal states.
 
-**** Generating a PDDL problem
-     :david:
+\begin{lstlisting}[language=haskell, caption=The action \texttt{set-inside} as defined in the SHRDLite domain file., label=lst:set-inside]
+;; `x' is inside `box' if `y' is inside `box' and `x' is on `y'
+(:action set-inside
+ :parameters   (?x ?y ?box)
+ :precondition (and (inside ?y ?box)
+                    (on ?x ?y))
+ :effect       (and (inside ?x ?box)
+                    (frozen ?x)))
+\end{lstlisting}
+
+     Listing \ref{lst:set-inside} shows the action =set-inside= as
+     specified in the domain file. It takes three parameters =?x, ?y=
+     and =?box=, has some preconditions which must be satisfied to be
+     able to use this action. Finally it has an effect specifying that
+     =?x= is inside the box =?box= and that =?x= is frozen. The
+     special predicate =frozen ?x= specifies that the object =?x=
+     cannot be moved anymore and is used to simplify the definitions
+     of other actions.
+
+     The main actions in the domain file is the =pick= and =drop=
+     commands that lifts up a block or puts it down on either another
+     block or the floor.
+
+**** Generating a PDDL problem                                        :david:
      $~$
 
 

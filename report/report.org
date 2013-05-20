@@ -346,8 +346,29 @@ findLocations world (List [Atom loc, thingDescr]) =
      indexes in =map fst things=. If /any/ or /the/ is used than the
      maximum column index is returned instead.[fn:2]
 
-**** Generating a PDDL problem
+**** Shrdlite PDDL domain                                             :david:
      $~$
+
+     \todo{move some of the text here to the top of \ref{sec:goal-gen}}
+
+     When we have parsed the user command and generated a goal the
+     only thing left to do in this part is to generate a =PDDL=
+     problem, i.e. a representation of the shrdlite world and the
+     current goal which can be understood by the planner. This
+     representation is actually split up in two different parts, a
+     domain specification and a problem description. The domain
+     specification, containing all object predicates and possible
+     actions in the world, is identical for all problems. The problem
+     description, discussed below, is specific for goal and world
+     state.
+
+     The shrdlite domain and the possible actions that can be
+     performed in this domain is expressed in a =PDDL= domain file
+     which can be seen in section \ref{sec:shrdlite-dom}.
+
+**** Generating a PDDL problem                                        :david:
+     $~$
+
 
 **** Putting it all together
      \todo{Show how an example goal is computed from a command string}
@@ -383,6 +404,8 @@ findLocations world (List [Atom loc, thingDescr]) =
 \newpage
 
 * Shrdlite PDDL domain file
+  \label{sec:shrdlite-dom}
+
 \begin{haskell}
 (define (domain shrdlu)
   (:functions (moves))

@@ -5,12 +5,11 @@
                (on ?x ?y)          ;; 'x' is on top of 'y'
                (box ?x)            ;; 'x' is a box
                (inside ?x ?y)      ;; 'x' is inside box 'y'
-               (inside-any ?x)     ;; 'x' is inside some box
                (smaller ?x ?y)     ;; 'x' is smaller than 'y'
                (stacked-on ?x ?c)  ;; 'x' is stacked on column 'c'
                (holding-any)       ;; the arm is holding something
                (holding ?x)        ;; 'x' is up in the air
-               (frozen ?x)         ;; cant move anything after that
+               (frozen ?x)         ;; 'x' is frozen and cant be moved
                (above ?x ?y)       ;; 'x' is somewhere above 'y'
                (under ?x ?y)       ;; 'x' is somewhere under 'y'
                (left-of ?x ?y)     ;; 'x' is somewhere left of 'y'

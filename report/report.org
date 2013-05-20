@@ -150,7 +150,7 @@ $~$
    This section describes the parts of the project that has been finished,
    currently under development, or just an idea waiting to be implemented.
    Section~\ref{sec:finished} shows a detailed view about the current design
-   including the structure of the domain and problem file written in STRIPS,
+   including the structure of the domain and problem file written in PDDL,
    the code level representation of the world, the goal creation process and
    the interpretation of the parsed grammar tree. Section~\ref{sec:progress}
    mainly contains the user commands that do not work as expected and,
@@ -165,7 +165,7 @@ $~$
      using /GF/ \cite{gf}.
    - Transforming a world state and a simplified command into a goal
      and then transforming the same world state and goal into a
-     /STRIPS/-problem.
+     /PDDL/-problem.
    - Using the /metric-ff/ planner to extract a plan for the given
      problem.
    The following sections will examine our solutions for each of these
@@ -337,7 +337,8 @@ findLocations world (List [Atom loc, thingDescr]) =
      indexes in =map fst things=. If /any/ or /the/ is used than the
      maximum column index is returned instead.[fn:2]
 
-**** Generating a STRIPS problem
+**** Generating a PDDL problem
+     $~$
 
 **** Putting it all together
      \todo{Show how an example goal is computed from a command string}

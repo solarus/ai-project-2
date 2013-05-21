@@ -159,7 +159,6 @@ $~$
    goal state.
 
 ** Related work
-
    The two-dimensional world described above is much simplified verision
    of a three-dimensional block world implemented by Terry Winograd in late
    1960s and described in his dissertation \cite{win1970shrdlu}.
@@ -198,7 +197,8 @@ $~$
    generate intermidiate steps in the problem solution.
 
 ** Available tools Bartek
-   \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
+#   \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
+
 
 * Overview of the architecture
    This section describes the parts of the project that has been finished,

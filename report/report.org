@@ -134,8 +134,6 @@ $~$
 ** Problem description
    \label{sec:problem}
 
-   \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
-
    The problem consists of the implementation of planner for a robot arm in a
    two-dimensional \shrdlite virtual world. This robot arm can only pick up or
    drop an element at the same time.  The planner's task is to determine a
@@ -161,8 +159,6 @@ $~$
    goal state.
 
 ** Related work
-
-#   \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
 
    The two-dimensional world described above is much simplified verision
    of a three-dimensional block world implemented by Terry Winograd in late
@@ -231,8 +227,6 @@ $~$
 
 *** Parsing
     \label{sec:parsing}
-
-    \todo{talk about GF and the shrdlite grammar?}
 
     The Grammatical Framework plays a vital role in this project. It parses the
     command given by the user and builds a tree structure for the planner. For
@@ -726,6 +720,9 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 * Discussion and Conclusions
    \todo{TODO Sum up your project, suggest future extensions and improvements.}
+
+# TODO Remove this later
+\nocite{*}
 
 \printbibliography
 

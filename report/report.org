@@ -1033,12 +1033,6 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
    Other:
    - some initial research on Fast-Forward planner
 
-
-* Other
-   \note{Here you include all other information and documentation that
-   did not fit into the report in the above sections but that you
-   consider too important to leave out.}
-
 * Footnotes
 
 [fn:1] The other two are /any/ and /all/.

@@ -130,29 +130,28 @@ $~$
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
 
    The problem consists of the implementation of planner for a robot arm in a
-   two-dimensional \shrdlite virtual
-   world. This robot arm can only pick up or drop an element at the same time.
-   The planner's task is to determine a sequence of the pick-up and drop
-   commands that leaves the virtual world in the required state defined by
-   the user.
+   two-dimensional \shrdlite virtual world. This robot arm can only pick up or
+   drop an element at the same time.  The planner's task is to determine a
+   sequence of the pick and drop commands that leaves the virtual world in
+   the required state defined by the user.
 
-   The block elements have several properties, such us: form, color, size,
-   width and height. Depending on these properties, several rules exist
-   that exclude certain combinations of stacked objects. For instance, a
-   block cannot be placed on another block if it is greater than the other
-   block, or nothing can be placed on a ball or pyramid. Besides blocks, there
-   is a floor in the world which cannot be moved and nothing can be below it.
+   The block elements have several properties, such us: form, color, size, width
+   and height. Depending on these properties, several rules exist that exclude
+   certain combinations of stacked objects. For instance, a block cannot be
+   placed on another block if it is greater than the other block, or nothing can
+   be placed on a ball or pyramid. Besides blocks, there is a floor in the world
+   which cannot be moved and nothing can be placed below it.
 
    The elements and their positions in the initial world state are chosen
    arbitrarily and hard-coded in the system. This initial state can be set to
    any preferable state.
 
-   A command given by the user is first parsed by a grammar interpreter,
-   called GF. Then, before feeding the result to the planner, it must be
-   converted to a form that is compatible with the planner. In our case it
-   is written in Planning Domain Definition Language. Finally, the planner
-   gives back a list of pick and drop commands that provide the transition
-   between the current and goal state.
+   A command given by the user is first parsed by a grammar interpreter, called
+   GF. Then, before feeding the result to the planner, it must be converted to a
+   form that is compatible with the planner. In our case it is written in
+   Planning Domain Definition Language. Finally, the planner gives back a list
+   of pick and drop commands that provide the transition between the current and
+   goal state.
 ** Related work Bartek
    \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
 ** Available tools Bartek
@@ -189,9 +188,9 @@ $~$
     \todo{talk about GF and the shrdlite grammar?}
 
     The Grammatical Framework plays a vital role in this project. It parses the
-    command given by the user and builts a tree structure for the planner. For
-    the representation of this tree, a tree-structured nested data list,
-    called s-expression, was used. Its implementation is relatively simple and
+    command given by the user and builds a tree structure for the planner. For
+    the representation of this tree, a tree-structured nested data list, called
+    s-expression, was used. Its implementation is relatively simple and
     described in details in section \ref{sec:sexpr}.
 
     The structure of the parse tree is represented by the following
@@ -240,7 +239,7 @@ $~$
            | "ball"
 \end{alltt}
 
-    This bnf form tells all the possible combination of words that was
+    This bnf form tells all the possible combinations of words that were
     produced by the Grammatical Framework and the problem generator must
     be able to interpret.
 
@@ -457,7 +456,8 @@ findLocations world (List [Atom loc, thingDescr]) =
      commands that lifts up a block or puts it down on either another
      block or the floor.
 
-**** Generating a PDDL problem                                        :david:
+**** Generating a PDDL problem
+     :david:
      $~$
 
      The last step before giving handing over the responsibility to
@@ -489,31 +489,32 @@ findLocations world (List [Atom loc, thingDescr]) =
 
 *** Plan-pruning
     It can happen that the planner does not produce a perfect plan. Several
-    consequitve state end up in a state that was reached earlier. In this case
-    a these steps are superflous and can be removed.
+    consecutive states end up in a state that was reached earlier. In this case 
+    these steps are superfluous and can be removed.
 
-    A basic form of this pruning was implemented in the current
-    project which can be further improved. Currently it only checks if a
-    consequtive pick and drop commands happen on the same column. The more
-    advanced form of this pruning would be to go through the whole list of
-    commands and check if the world state that this command leads was reached
-    earlier. If it was, then the list of commands can be deleted back to this
-    earlier state. For instance, the 'A -> B -> ... -> B' list of states can
-    be reduced to 'A -> B'.
+    A basic form of this pruning was implemented in the current project which
+    can be further improved. Currently it only checks if consecutive pick and
+    drop commands happen on the same column. The more advanced form of this
+    pruning would be to go through the whole list of commands and check if the
+    world state that this command leads to was reached earlier. If it was, then the
+    list of commands can be deleted back to this earlier state. For instance,
+    the 'A -> B -> ... -> B' list of states can be reduced to 'A -> B'.
 
 *** First Order Logic
     After some fruitless experimentation with a FOL planner, the so-called
-    E-prover, ff-metric was chosen for planning. This decision was based on
-    its significantly higher running time and hardship of goal interpretation.
-    However, in the long run E-prover might produce more appealling
-    results with a simplier problem description form.
+    E-prover, metric-ff was chosen for planning. This decision was based on its
+    significantly higher running time and hardship of goal interpretation.
+    However, in the long run E-prover might produce more appealing results with
+    a simpler problem description form.
 
 *** Generating FOL to STRIPS
     Another possible solution for planning can be to merge FOL with STRIPS
     combining their positive features. By this, a planner can be gained that is
-    endowed by easy goal generation and provide effortless extenasibility for
-    future grammar. Unfortunately, there was no time for experimentations in
-    this field, and, therefore, it remained only an idea.
+    endowed by easy goal generation and openness for future grammar extensions.
+    Unfortunately, there was no time for such experimentations, and, therefore,
+    it remained only an idea.
+
+*** Randomized sequence states
 
 * Results and Evaluation
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}

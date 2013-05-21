@@ -749,6 +749,8 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    Here, some parts that are still under development are touched upon.
 
 *** Bug corrections
+    \label{sec:bugs}
+
     Currently there are some bugs in =findLocations= which were
     discovered while writing the report. Some of them were fixed
     before submitting the final version but some remains. One of the
@@ -858,6 +860,8 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
      blocks.
 
 * Discussion
+  \label{sec:discussion}
+
   In this project we implemented an automated planner for the
   \shrdlite world. Several impediments had to be overcome, for
   instance: constructing the correct goal from a user command or
@@ -999,6 +1003,20 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
    - Section \ref{sec:results}
 
 ** David Spångberg
+   Code:
+   - =SExpr= module
+   - Work in =Types=, =Utils= and =World= modules
+   - General work in =Planner= module
+
+   Report:
+   - Parsing \ref{sec:parsing}
+   - Goal generation \ref{sec:goal-gen}
+   - S-expressions \ref{sec:sexpr}
+   - Bug corrections \ref{sec:bugs}
+   - Discussion \ref{sec:discussion}
+
+   Other:
+   - Experimentation with eprover
 
 ** Bartolomeus Jankowski
 
@@ -1010,6 +1028,7 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
    - Abstract
    - Related Works
    - Available Tools
+   - Discussion \ref{sec:discussion}
 
    Other:
    - some initial research on Fast-Forward planner

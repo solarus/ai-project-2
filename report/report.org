@@ -159,26 +159,40 @@ $~$
    of pick and drop commands that provide the transition between the current and
    goal state.
 
-** Related work Bartek
+** Related work
 
-   \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
+#   \todo{TODO Describe some other planners, list some papers, mention FF, hanoi problem}
 
-   World described above is two-dimensional, it is much more simplified verision
+   The two-dimensional world described above is much simplified verision
    of a three-dimensional block world implemented by Terry Winograd in late
-   1960s and dscribed in his dissertation \cite{win1970shrdlu}.
+   1960s and described in his dissertation \cite{win1970shrdlu}.
 
-   #+CAPTION: The original SHRDLU in action on PDP-6 computer.
-   #+LABEL: fig:shrdlu3d
-   #+ATTR_LATEX: width=0.38\textwidth wrap placement={Hr}{0.4\textwidth}
-   [[./images/shrdlu_3d.png]]
+   Winograd's, at its time pioneering planner called SHRDLU, demonstrated
+   interaction between the user and the system using simple English phrases. The
+   domain was three-dimensional world populated by several different object that
+   could be arranged by the system as instructed by the user. It was also able
+   to answer simple questions about the world such as "What does the green box
+   contain?" and memorize names of the world's elemenets or simple facts such
+   about the user, provided that the user informed the system about these facts
+   before hand.
 
-   Winograd's planner called SHRDLU, allowed user interaction using simple
-   English phrases, to operate in a three-dimensional world. It was also able to
-   answer simple questions about the world such as "What does the green box
-   contain?" and memorize names of the world's elemenets.
+   SHRDLU in action can be seen in Figue \ref{fig:shrdlu3d} and in the video
+   [fn:3] available on-line (ca. 6 min).
 
-   SHRDLU in action can be seen in Figue \ref{fig:shrdlu3d} and in the videos
-   available on-line [fn:3].
+   \begin{wrapfigure}[9]{r}{3.0in}
+      %\begin{minipage}[c]{\textwidth}
+      \centering
+          \includegraphics[width=3in]{./images/shrdlu_3d.png}
+          \caption{The original SHRDLU in action, running on PDP-6 computer.}
+          \label{fig:shrdlu3d}
+      %\end{minipage}
+    \end{wrapfigure}
+
+   \textsc{Fast Forward Planner} \emph{FF} \cite{ffPlanner1} is another planner
+   worth mentioning here. It is a domain independent planning system handling
+   STRIPS planning tasks (that can also be extended with \emph{equality}
+   operator and \textsc{Action Description Language} (ADL)), used here to
+   generate intermidiate steps in the problem solution.
 
 ** Available tools Bartek
    \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}

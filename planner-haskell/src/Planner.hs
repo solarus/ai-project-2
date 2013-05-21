@@ -152,6 +152,8 @@ findLocations w (List [Atom loc, thingDescr]) =
     let things = findThings w thingDescr
         Atom s = car thingDescr
     in case loc of
+        -- FIXME: Bugs here for beside, above, ontop, under and inside
+        -- due to not considering the value of `s' if present.
         "beside"  -> let idxs = nub [i' | (i, _) <- things, i' <- [i-1, i+1], i >= 0, i < length w]
                      in concatMap (allThingsAtCol w) idxs
         "leftof"  -> let maxIdxFun = if s == "all" then minimum else maximum

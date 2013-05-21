@@ -203,8 +203,8 @@ $~$
    as future work.
 
    One possibility of solving a planning problem is to encode it into a language
-   of \emph{First Order Logic} (FOL) and then solve, using any appropriate FOL-
-   theorem prover. One of more known such provers is \emph{E-Prover} originally
+   of \emph{First Order Logic} (FOL) and then solve, using any appropriate FOL-theorem
+   prover. One of more known such provers is \emph{E-Prover} originally
    developed by Stephan Shultz \cite{e-prover}. Some simple tests showed
    however, that it is seemingly slow and more importantly, it generates large
    solution paths even for simple problems. As the consequence, E-Prover was not
@@ -359,7 +359,7 @@ $~$
     produced by the Grammatical Framework and the problem generator must
     be able to interpret.
 
-*** Goal/Problem generation
+*** Generating Goal and Problem Files
     \label{sec:goal-gen}
 
 #    \todo{latex doesn't like labels for subsubsubsections. Either
@@ -455,6 +455,8 @@ findBlocks world (List [Atom "block", Atom form, Atom size, Atom color]) =
            =findLocations= is the returned value for the top most
            =findBlocks= call. This intersection will contain a list of
            exactly one element, namely the white ball.
+
+\newpage
 
      Finally the last function that needs to be explained is
      =findLocations=.
@@ -633,6 +635,8 @@ data Goal = G
 defaultGoal { getRightOf = [(The a, Any [b,c,d])] }
 \end{haskell}
 
+\newpage
+
      For each quantifier pair in all of the lists in the goal data
      type, a subgoal will be generated. Each of these subgoals is then
      joined by a large conjunction. For example the pair above will be
@@ -723,9 +727,6 @@ runs the 'ff' binary with the domain and problem files, check if there was any
 error, and parses the output.
 
 \begin{bash}
-domain="../planner-haskell/resources/shrdlu-dom.pddl"
-problem_file=$1
-
 # run planner
 ff_out=$(../bin/ff -o $domain -f $problem_file -s 5)
 
@@ -775,7 +776,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     pruning would be to go through the whole list of commands and check if the
     world state that this command leads to was reached earlier. If it was, then the
     list of commands can be deleted back to this earlier state. For instance,
-    the 'A -> B -> ... -> B' list of states can be reduced to 'A -> B'.
+    the \hbox{'A -> B -> ... -> B'} list of states can be reduced to \hbox{'A -> B'.}
 
 *** First Order Logic
     \label{sec:future-fol}
@@ -784,6 +785,8 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     significantly higher running time and hardship of goal interpretation.
     However, in the long run E-prover might produce more appealing results with
     a simpler problem description form.
+
+\newpage
 
 ** Future work
    \label{sec:future}
@@ -818,11 +821,18 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    length for the user commands that produce the expected result.
 #+CAPTION: Initial state of the \shrdlite world
 #+LABEL: fig:init_state
-#+ATTR_LATEX: placement=[h] scale=0.5
+#+ATTR_LATEX: placement=[H] scale=0.5
 [[./images/initial.png]]
+
+Putting all red blocks in the white box is a relatively hard problem, since
+it needs 42 steps to be solved. On the other hand, its planning time is still manageable.
+Furthermore, commands requiring less than 25 steps are most of the time solved almost
+instantly. According to our experimentations, most of the sensible commands
+can be solved in less than 25 steps, which provides a pleasant user experience.
 
 #+CAPTION: Problems with working solutions
 #+LABEL:   tab:working_problems
+#+ATTR_LATEX: placement=[H]
 | User Command                                             | Planning | Command List |
 |                                                          | Time     | Length       |
 |----------------------------------------------------------+----------+--------------|
@@ -833,13 +843,6 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 | move all red boxes inside the white box                  | 1.394s   | 18           |
 | move all red blocks to the left of the tall blue block   | 1.550s   | 22           |
 | put all red blocks in the white box                      | 15.478s  | 42           |
-
-
-Putting all red blocks in the white box is a relatively hard problem, since
-it needs 42 steps to be solved. On the other hand, its planning time is still manageable.
-Furthermore, commands requiring less than 25 steps are most of the time solved almost
-instantly. According to our experimentations, most of the sensible commands
-can be solved in less than 25 steps, which provides a pleasant user experience.
 
 ** Problems without working solution
    \label{sec:non_working}
@@ -856,7 +859,7 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
      in one column, and the yellow pyramid must be above all of these red
      blocks.
 
-* Discussion
+* Discussion and Summary
   \label{sec:discussion}
 
   In this project we implemented an automated planner for the

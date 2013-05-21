@@ -197,8 +197,6 @@ $~$
    generate intermidiate steps in the problem solution.
 
 ** Available tools
-#   \todo{TODO BARTEK: FOL-theorem provers, STRIPS, PDDL, GF}
-
    During the implementation of the planner described here, several tools and
    libraries were taken into consideration as possible aids or components of
    \shrdlite. Some of these libraries were used and other are perhaps intended
@@ -364,8 +362,8 @@ $~$
 *** Goal/Problem generation
     \label{sec:goal-gen}
 
-    \todo{latex doesn't like labels for subsubsubsections. Either
-    remove the section references or try to fix somehow.}
+#    \todo{latex doesn't like labels for subsubsubsections. Either
+#    remove the section references or try to fix somehow.}
 
     In this section the main task of the project is tackled, namely
     generating a goal and problem description from a user command. The
@@ -809,7 +807,6 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 * Results and Evaluation
   \label{sec:results}
-   \todo{TODO problem: "Besides Problem" two reds, blah blah...}
    This chapter will present problems from the laboratory description and
    problems that required extra effort during
    implementation. Moreover, in section \ref{sec:non_working}, problems, not solved correctly due to their
@@ -877,7 +874,7 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
   to follow.
 
 # TODO Remove this later
-\nocite{*}
+# \nocite{*}
 
 \printbibliography
 

@@ -1,3 +1,5 @@
+bin/metric-ff
+cabal-dev
 *.gfo
 planner-haskell/dist
 planner-haskell/cabal-dev
@@ -8,3 +10,14 @@ ff
 .DS_Store
 *.sublime-project
 *.sublime-workspace
+*.o
+*.aux
+*.tex
+*.bbl
+*.dvi
+*.fls
+*.pdf
+*.run.xml
+*.blg
+*.bcf
+*.fdb_latexmk

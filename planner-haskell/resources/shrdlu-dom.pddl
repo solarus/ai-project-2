@@ -3,7 +3,6 @@
 
   (:predicates (clear ?x)          ;; 'x' is top-most block
                (on ?x ?y)          ;; 'x' is on top of 'y'
-               (box ?x)            ;; 'x' is a box
                (inside ?x ?y)      ;; 'x' is inside box 'y'
                (smaller ?x ?y)     ;; 'x' is smaller than 'y'
                (stacked-on ?x ?c)  ;; 'x' is stacked on column 'c'

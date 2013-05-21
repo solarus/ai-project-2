@@ -588,9 +588,6 @@ defaultGoal { getRightOf = [(The a, Any [b,c,d])] }
      place the pyramid above both red blocks since they have to be on
      different columns!
 
-**** Putting it all together
-     \todo{Show how an example goal is computed from a command string}
-
 *** Finding a plan
     \label{sec:planning}
 

@@ -685,7 +685,19 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    Here, some parts that are still under development are touched upon.
 
 *** Bug corrections
-   \todo{remove?}
+    Currently there are some bugs in =findLocations= which were
+    discovered while writing the report. Some of them were fixed
+    before submitting the final version but some remains. One of the
+    bugs is when calculating the things returned when the relative
+    placement word is "beside" as in the command: "pick up any block
+    beside all red blocks". In natural language this sentence doesn't
+    look right but makes sense if all red blocks are one the same
+    column are separated by exactly one space. The problem is that the
+    current implementation assumes that "any" is used instead of "all"
+    as in the sentence above. In the "any" case all blocks beside any
+    red block would be returned while in the "all" case only the
+    blocks that are beside all red blocks at the same time would be
+    returned.
 
 *** Plan-pruning
     It can happen that the planner does not produce a perfect plan. Several

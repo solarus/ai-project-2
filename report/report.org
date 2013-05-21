@@ -763,11 +763,6 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     blocks that are beside all red blocks at the same time would be
     returned.
 
-** Future work
-   \label{sec:future}
-   This section mentions only a subset of the viable additions for the
-   project which might further increase its usability.
-
 *** Plan-pruning
     \label{sec:plan-purning}
     It can happen that the planner does not produce a perfect plan. Several

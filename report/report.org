@@ -265,8 +265,33 @@ $~$
      /PDDL/-problem.
    - Using the /metric-ff/ planner to extract a plan for the given
      problem.
-   The following sections will examine our solutions for each of these
-   problems in detail.
+   In addition to a small introduction of s-expressions, the following
+   sections will examine our solutions for each of the problems above
+   in detail.
+
+*** S-expressions
+    \label{sec:sexpr}
+
+    Since the user command returned from GF was serialized to an
+    s-expression, a small module was made to parse and process such
+    expressions. Traditionally an s-expression can be describe by the
+    following inductively defined data type:
+
+    - An /atom/ is an s-expression
+    - If =x= and =y= are s-expressions, then so is =(x . y)=
+
+    In the s-expression module an atom is defined as either the nil
+    atom /()/ or a list of characters not including any parenthesis,
+    semicolons or double quotation marks. In most instances, which is
+    the case of the GF output, s-expressions lists are written without
+    dots between elements. The list =(a b c d)= should then be
+    interpreted as =(a.(b.(c.(d.()))))= or =(a.b.c.d.())=.
+
+    Finally the implemented s-expression data type assumes that all
+    lists are sound; there cannot be lists where the second element
+    after the dot isn't a list, i.e. =(a.b)= is not considered to be a
+    valid s-expression. This makes both working with and parsing
+    s-expressions easier.
 
 *** Parsing
     \label{sec:parsing}
@@ -335,9 +360,6 @@ $~$
     This bnf form tells all the possible combinations of words that were
     produced by the Grammatical Framework and the problem generator must
     be able to interpret.
-
-*** S-expression
-    \label{sec:sexpr}
 
 *** Goal/Problem generation
     \label{sec:goal-gen}

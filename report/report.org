@@ -131,6 +131,8 @@ $~$
   the development process.
 
 ** Problem description
+   \label{sec:problem}
+
    \todo{TODO Describe Block-World, translate grammar -> repr. solvable by some solver }
 
    The problem consists of the implementation of planner for a robot arm in a

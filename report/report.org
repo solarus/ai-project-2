@@ -683,17 +683,9 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 ** Work in progress
    \label{sec:progress}
    Here, some parts that are still under development are touched upon.
-   \todo{TODO describe actions that do not work/work not as expected}
 
 *** Bug corrections
-   \todo{TODO}
-
-** Future work
-   \label{sec:future}
-   This section mentions only a subset of the viable additions for the
-   project which might further increase its usability.
-
-   \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
+   \todo{remove?}
 
 *** Plan-pruning
     It can happen that the planner does not produce a perfect plan. Several
@@ -715,6 +707,14 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     However, in the long run E-prover might produce more appealing results with
     a simpler problem description form.
 
+** Future work
+   \label{sec:future}
+
+   This section mentions a subset of the viable additions for the
+   project which might further increase its usability.
+
+   \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
+
 *** Generating FOL to STRIPS
     Another possible solution for planning can be to merge FOL with STRIPS
     combining their positive features. By this, a planner can be gained that is
@@ -722,7 +722,11 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     Unfortunately, there was no time for such experimentations, and, therefore,
     it remained only an idea.
 
-*** Randomized sequence states
+*** Other planners
+    There are many other planners and planning algorithms besides the
+    ones discussed so far. Any number of these planners can be tried
+    out or implemented and eventually benchmarked against each other
+    in terms of running time and solution length.
 
 * Results and Evaluation
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}

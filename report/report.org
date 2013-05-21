@@ -779,7 +779,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 *** First Order Logic
     \label{sec:future-fol}
-    After some fruitless experimentation with a FOL planner, the so-called
+    After some fruitless experimentation with a FOL theorem prover, namely
     E-prover, metric-ff was chosen for planning. This decision was based on its
     significantly higher running time and hardship of goal interpretation.
     However, in the long run E-prover might produce more appealing results with

@@ -227,20 +227,15 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
             mapM_ tellSmaller smallerThan >> ln
 
             line ";; Some objects are clear."
-            forM_ (zipWith (:) floorTiles (map (map name) (map snd iWorld))) $ \l ->
+            forM_ (map (map name) (map snd iWorld)) $ \l ->
                 tellSexp ["clear", last l]
             ln
 
-            line ";; Some object are boxes."
-            forM_ (map bName (filter ((==Box) . form) (map snd (getBlocks iWorld)))) $ \b ->
-                tellSexp ["box", b]
-            ln
+            line ";; Some object are boxes and boxes are inside themselves."
+            tellBoxes iWorld >> ln
 
             line ";; Objects which are _on_ other objects."
             tellOn iWorld >> ln
-
-            line ";; Objects which are _in_ other objects."
-            tellIn iWorld >> ln
 
             line ";; Objects are above and under themselves."
             tellAboveUnder iWorld >> ln
@@ -252,8 +247,7 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
             tellBeside iWorld >> ln
 
             line ";; Objects are above floor tiles."
-            forM_ (zip floorTiles (map (map name . snd) iWorld)) $ \(f, os) -> do
-                tellSexp ["stacked-on", f, f]
+            forM_ (zip floorTiles (map (map name . snd) iWorld)) $ \(f, os) ->
                 mapM_ (\o -> tellSexp ["stacked-on", o, f]) os
         line ")"
 
@@ -301,28 +295,14 @@ toPDDL (mHolding, iWorld) goal = unlines . execWriter $ do
                   , size o1 <= size o2
                   ]
 
+    tellBoxes world =
+        let boxes = map bName . filter ((==Box) . form) . map snd . getBlocks $ world
+        in forM_ boxes $ \b -> tellSexp ["inside", b, b]
+
     getOn'       = map listToPair . nGrams 2 . reverse
-    isOnElems    = concatMap getOn' . zipWith (:) floorTiles . map (map name . snd)
+    isOnElems    = concatMap getOn' . map (map name . snd)
     tellOn world = forM_ (isOnElems world) $ \(o1, o2) -> tellSexp ["on", o1, o2]
 
-    getIn' _       []  = []
-    getIn' m       (TFloorTile _ : rest) = getIn' m rest
-    getIn' Nothing (TBlock o:rest)
-                        -- Boxes are inside themselves
-        | form o == Box = (bName o, bName o) : getIn' (Just o) rest
-        | otherwise     = getIn' Nothing rest
-    getIn' (Just b) (TBlock o:rest)
-        | form o == Box = p : (bName o, bName o) : getIn' (Just o) rest
-        | otherwise     = p : getIn' (Just b) rest
-      where p = (bName b, bName o)
-    -- FIXME: What to do if there are multiple boxes? Currently the
-    -- outermost box is the only one that counts.
-    isInElems = concatMap (getIn' Nothing . snd)
-    tellIn world = do
-        let elems = isInElems world
-            pairToList (a,b) = [a,b]
-        forM_ elems $ \(o1, o2) -> tellSexp ["inside", o2, o1]
-        forM_ (nub (concatMap pairToList elems)) $ \o -> tellSexp ["inside-any", o]
     tellAboveUnder world = forM_ allBlocks' $ \o -> do
         tellSexp ["above", name o, name o]
         tellSexp ["under", name o, name o]

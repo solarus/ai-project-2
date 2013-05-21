@@ -179,7 +179,7 @@ $~$
    SHRDLU in action can be seen in Figue \ref{fig:shrdlu3d} and in the video
    [fn:3] available on-line (ca. 6 min).
 
-   \begin{wrapfigure}[9]{r}{3.0in}
+   \begin{wrapfigure}[14]{r}{3.0in}
       %\begin{minipage}[c]{\textwidth}
       \centering
           \includegraphics[width=3in]{./images/shrdlu_3d.png}
@@ -188,7 +188,13 @@ $~$
       %\end{minipage}
     \end{wrapfigure}
 
-   \textsc{Fast Forward Planner} \emph{FF} \cite{ffPlanner1} is another planner
+   In some aspects the two-dimensional problem described here is reminiscent to
+   the well-known problem called \textsc{Towers Of Hanoi}, where the user is
+   supposed to move a number of disks according to some natural rules. This
+   problem can often be solved by Automated Planners, one such planner being FF
+   described below:
+
+   \textsc{Fast Forward Planner} (FF) \cite{ffPlanner1} is another planner
    worth mentioning here. It is a domain independent planning system handling
    STRIPS planning tasks (that can also be extended with \emph{equality}
    operator and \textsc{Action Description Language} (ADL)), used here to

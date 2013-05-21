@@ -99,15 +99,15 @@ $~$
 
 \section*{Abstract}
 \smallskip
-  Automated planning and scheduling have many obvious application i real-life
-  areas of bussiness. One such imaginable planner, is one that arranges a set of
+  Automated planning and scheduling have many obvious application in real-life
+  areas of business. One such imaginable planner, is one that arranges a set of
   objects in an abstract \emph{world} that perhaps models a factory floor or a
-  harbor loading area where the task is to move specific cago crates from one
+  harbor loading area where the task is to move specific cargo crates from one
   spot to another.
 
-  Here a simplified version af such a planner is implemented, the most important
-  simplifications being that dimensionas of the world are restricted to two and
-  that while the commands to the plannaer are given in plain English, the
+  Here a simplified version of such a planner is implemented, the most important
+  simplifications being that dimensions of the world are restricted to two and
+  that while the commands to the planner are given in plain English, the
   grammar that the scheduler is able to parse is quite simple.
 
   The application is inspired by the much more complex system described in Terry
@@ -159,7 +159,7 @@ $~$
    goal state.
 
 ** Related work
-   The two-dimensional world described above is much simplified verision
+   The two-dimensional world described above is much simplified version
    of a three-dimensional block world implemented by Terry Winograd in late
    1960s and described in his dissertation \cite{win1970shrdlu}.
 
@@ -168,7 +168,7 @@ $~$
    domain was three-dimensional world populated by several different object that
    could be arranged by the system as instructed by the user. It was also able
    to answer simple questions about the world such as "What does the green box
-   contain?" and memorize names of the world's elemenets or simple facts such
+   contain?" and memorize names of the world's elements or simple facts such
    about the user, provided that the user informed the system about these facts
    before hand.
 
@@ -210,13 +210,13 @@ $~$
    developed by Stephan Shultz \cite{e-prover}. Some simple tests showed
    however, that it is seemingly slow and more importantly, it generates large
    solution paths even for simple problems. As the consequence, E-Prover was not
-   used in the project but perhaps should be eaxmined more thoroughly in the
+   used in the project but perhaps should be examined more thoroughly in the
    future, see Section \ref{sec:future-fol}.
 
    Another suitable usable language that is directly aimed at planning problems
    is \emph{STRIPS}. The language has its roots in an automated planner with the
    same name, developed in early 1970's, where it also was used to model the
-   problem. \emph{PDDL} is more recent attempt to standarize description of
+   problem. \emph{PDDL} is more recent attempt to standardize description of
    domain and planning problems and is a subset of STRIPS. Fast Forward planner
    mentioned above uses PDDL as input, therefore the domain and problems were
    modelled using this language.
@@ -686,16 +686,16 @@ defaultGoal { getRightOf = [(The a, Any [b,c,d])] }
 
 *** Finding a plan
     \label{sec:planning}
-    After having the problem file, the planner is feeded with this file along
+    After having the problem file, the planner is fed with this file along
     with the domain file. These files were described in details in
     section~\ref{sec:goal-gen}, and, therefore, they are not covered here again.
     As for the planner, two distinct implementation of the fast forward
-    planner were tested. Fisrt, the simple fast forward planner \cite{ff} was
+    planner were tested. First, the simple fast forward planner \cite{ff} was
     used, but after a few tests on metric-ff \cite{metric-ff}, the simple ff was
     not used anymore due to its five times slower planning time.
 
     The plan contains a list of pick and drop commands which can contain extra
-commands that are unrelevant in the plan. Such command can be for instance a
+commands that are irrelevant in the plan. Such command can be for instance a
 pair of consecutive pick and drop commands on the same column. By removing these
 extra steps in the plan, a shorter and more optimal plan can be gained. This
 process is called pruning. This is done by the following code:
@@ -813,7 +813,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 * Results and Evaluation
   \label{sec:results}
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}
-   This chapter will present problems from the laboratory descripion and
+   This chapter will present problems from the laboratory description and
    problems that required extra effort during
    implementation. Moreover, in section \ref{sec:non_working}, problems, not solved correctly due to their
    complexity and the lack of time spent on implementation, are presented.
@@ -842,7 +842,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 
 Putting all red blocks in the white box is a relatively hard problem, since
-it needs 42 steps to be solved. On the other hand, its planning time is still managable.
+it needs 42 steps to be solved. On the other hand, its planning time is still manageable.
 Furthermore, commands requiring less than 25 steps are most of the time solved almost
 instantly. According to our experimentations, most of the sensible commands
 can be solved in less than 25 steps, which provides a pleasant user experience.
@@ -858,7 +858,7 @@ can be solved in less than 25 steps, which provides a pleasant user experience.
    - /pick up the yellow pyramid above all red blocks:/\\
      The current implementation picks up a yellow pyramid that is on a red
      block. However, the expected result is to pick up the yellow pyramid that
-     is above all red blocks. To achive this, all red blocks must be
+     is above all red blocks. To achieve this, all red blocks must be
      in one column, and the yellow pyramid must be above all of these red
      blocks.
 

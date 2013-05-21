@@ -929,6 +929,19 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 ** Bartolomeus Jankowski
 
+   Code:
+   - findLocations in Planner.hs
+   - PDDL domain file
+
+   Report:
+   - Abstract
+   - Related Works
+   - Available Tools
+
+   Other:
+   - some initial research on Fast-Forward planner
+
+
 * Other
    \note{Here you include all other information and documentation that
    did not fit into the report in the above sections but that you

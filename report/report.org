@@ -242,6 +242,9 @@ $~$
 
     The structure of the parse tree is represented by the following
     Backus–Naur Form:
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.5\textwidth}
 \begin{alltt}
     \textbf{Command} ::= "take" Thing
               | "put"  Location
@@ -262,7 +265,10 @@ $~$
 
     \textbf{Block} ::= "block" Form Size Color
             | "thatis" Block Location
-
+\end{alltt}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\begin{alltt}
     \textbf{Size} ::= "anysize"
            | "small"
            | "medium"
@@ -285,6 +291,9 @@ $~$
            | "square"
            | "ball"
 \end{alltt}
+\end{minipage}
+\caption{BNF of the user command language}
+\end{figure}
 
     This bnf form tells all the possible combinations of words that were
     produced by the Grammatical Framework and the problem generator must

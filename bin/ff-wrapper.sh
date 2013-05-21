@@ -5,7 +5,7 @@ problem_file=$1
 
 PATH=$PATH:/usr/local/bin/
 
-ff_out=$(../bin/ff2 -o $domain -f $problem_file -s 5)
+ff_out=$(../bin/metric-ff -o $domain -f $problem_file -s 5)
 
 if [[ $? != 0 ]] ; then
     echo "Some error occured. Output from ff:"

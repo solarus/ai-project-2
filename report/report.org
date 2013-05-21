@@ -789,6 +789,44 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 * Results and Evaluation
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}
+   This chapter will present problems that required extra effort during
+   implementation and problems that are not solved correctly due to their
+   complexity and the lack of time spent on implementation.
+   All of the user commands for these problems were executed from the same
+   initial state, depicted by picture \ref{fig:init_state}.
+** Problems with solution
+   Table \ref{tab:working_problems} contains the planning time and command list
+   length for the user commands that produce the expected result.
+#+CAPTION: Initial state of the \shrdlite world
+#+LABEL: fig:init_state
+#+ATTR_LATEX: placement=[h] scale=0.5
+[[./images/initial.png]]
+
+#+CAPTION: Problems with working solutions
+#+LABEL:   tab:working_problems
+| User Command                                             | Planning | Command List |
+|                                                          | Time     | Length       |
+|----------------------------------------------------------+----------+--------------|
+| Pick up a big red block                                  | 0.613s   | 3            |
+| Grasp the green pyramid                                  | 0.636s   | 2            |
+| Put it in a box                                          | 0.642s   | 1            |
+| Put a ball that is to the left of a pyramid inside a box | 0.679s   | 4            |
+| move all red blocks to the left of the tall blue block   | 1.550s   | 22           |
+| move all red boxes inside the white box                  | 1.394s   | 18           |
+| put all red blocks in the white box                      | 15.478s  | 42           |
+
+** Problems without working solution
+   - put the yellow ball above all red blocks
+     This problem is not executable since there is a rule that makes all the red
+     blocks to stay at their current position. However, the user's intention
+     would be to stack all the red block in one column and move the yellow
+     ball on the top of this stack.
+   - pick up the yellow pyramid above all red blocks
+     The current implementation picks up a yellow pyramid that is on a red
+     block. However, the expected result is to pick up the yellow pyramid that
+     is above all the red blocks. To achive this, all the red block must be
+     in one column, and the yellow pyramid must be above all of these red
+     blocks.
 
 * Discussion
   In this project we implemented an automated planner for the

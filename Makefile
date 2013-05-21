@@ -38,6 +38,7 @@ clean:
 	make -C $(ff_path) clean
 	rm -f $(ff_path)/ff bin/metric-ff www/parser.cgi www/planner.cgi
 	rm -f www/*.gfo
+	rm -f ai-project-2.tar.gz
 
 archive:
 	git archive --format=tar.gz --prefix=ai-project-2/ -o ai-project-2.tar.gz HEAD

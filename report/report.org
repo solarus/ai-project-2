@@ -299,10 +299,26 @@ $~$
 *** Goal/Problem generation
     \label{sec:goal-gen}
 
-    \emph{All functions in the following sections belongs to the
-    \texttt{Planner} module (if not stated otherwise).}
+    \todo{latex doesn't like labels for subsubsubsections. Either
+    remove the section references or try to fix somehow.}
+
+    In this section the main task of the project is tackled, namely
+    generating a goal and problem description from a user command. The
+    first problem is to identify all blocks and relative locations
+    that the user talks about have in the current world. This is
+    discussed in section \ref{sec:finding}. The next step, discussed
+    in section \ref{sec:goals}, is the process of generating a goal
+    representing the intention of the user command. When a goal has
+    been found the current state of the world together with the goal
+    has to be encoded into a representation understood by the planner.
+    Section \ref{sec:domain} discusses how the world and the possible
+    actions in the world is encoded using predicates in a specific
+    domain file. Finally section \ref{sec:gen-problem} discusses how
+    the world is finally encoded using these predicates.
 
 **** Finding Things, Blocks and Locations
+     \label{sec:finding}
+
      $~$
 
      There are three basic types in the \shrdlite world: /things/,
@@ -402,6 +418,8 @@ findLocations world (List [Atom loc, thingDescr]) =
      maximum column index is returned instead.[fn:2]
 
 **** Finding goals
+     \label{sec:goals}
+
      $~$
 
      The implementation of the goal finding functions closely follows
@@ -457,20 +475,9 @@ getQuantifier q = case q of
      floor" then the quantifier returned would be =Any=.
 
 **** Shrdlite PDDL domain
+     \label{sec:domain}
+
      $~$
-
-     \todo{move some of the text here to the top of \ref{sec:goal-gen}}
-
-     When we have parsed the user command and generated a goal the
-     only thing left to do in this part is to generate a =PDDL=
-     problem, i.e. a representation of the \shrdlite world and the
-     current goal which can be understood by the planner. This
-     representation is actually split up in two different parts, a
-     domain specification and a problem description. The domain
-     specification, containing all object predicates and possible
-     actions in the world, is identical for all problems. The problem
-     description, discussed below, is specific for goal and world
-     state.
 
      The \shrdlite domain and the possible actions that can be
      performed in this domain is expressed in a =PDDL= domain file
@@ -506,6 +513,8 @@ getQuantifier q = case q of
      block or the floor.
 
 **** Generating a PDDL problem
+     \label{sec:gen-problem}
+
      $~$
 
      The last step before handing over the responsibility to the

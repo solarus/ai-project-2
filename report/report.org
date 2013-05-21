@@ -483,7 +483,6 @@ findLocations world (List [Atom loc, thingDescr]) =
      block or the floor.
 
 **** Generating a PDDL problem
-     :david:
      $~$
 
      The last step before handing over the responsibility to the

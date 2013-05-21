@@ -40,15 +40,14 @@ numbersep=7pt,
 xleftmargin=10pt
 }
 
-\lstloadlanguages{Haskell}
+\lstloadlanguages{Haskell, Bash, Lisp}
+\lstset{
+  basicstyle=\small\ttfamily,
+  flexiblecolumns=false,
+  basewidth={0.5em,0.45em}
+ }
 \lstnewenvironment{haskell}
-    {\lstset{}%
-      \csname lst@SetFirstLabel\endcsname}
-    {\csname lst@SaveFirstLabel\endcsname}
-    \lstset{
-      basicstyle=\small\ttfamily,
-      flexiblecolumns=false,
-      basewidth={0.5em,0.45em},
+    {\lstset{
       literate={+}{{$+$}}1 {/}{{$/$}}1 {*}{{$*$}}1 {=}{{$=$}}1
                {>}{{$>$}}1 {<}{{$<$}}1 {\\}{{$\lambda$}}1
                {\\\\}{{\char`\\\char`\\}}1
@@ -57,7 +56,13 @@ xleftmargin=10pt
                {\ .\ }{{$\circ$}}2 {\ .\ }{{$\circ$}}2
                {>>}{{>>}}2 {>>=}{{>>=}}2
                {|}{{$\mid$}}1
-    }
+     }
+     \csname lst@SetFirstLabel\endcsname}
+    {\csname lst@SaveFirstLabel\endcsname}
+
+\lstnewenvironment{bash}
+    {\csname lst@SetFirstLabel\endcsname}
+    {\csname lst@SaveFirstLabel\endcsname}
 #+END_LATEX
 
 \thispagestyle{empty}

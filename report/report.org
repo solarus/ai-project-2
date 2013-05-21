@@ -790,8 +790,20 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 * Results and Evaluation
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}
 
-* Discussion and Conclusions
-   \todo{TODO Sum up your project, suggest future extensions and improvements.}
+* Discussion
+  In this project we implemented an automated planner for the
+  \shrdlite world. Several impediments had to be overcome, for
+  instance: constructing the correct goal from a user command or
+  encoding the world in =PDDL=. Our implementation works sufficiently
+  well, enough to solve fairly complicated problems, always producing
+  short plans.
+
+  There are several ways to extend the project, we think that the most
+  exiting one is to use quantification in the goal description instead
+  of enumerating all blocks matching the current criteria. In our
+  opinion, any extension should be reasonably simple given that the
+  project size is relatively small and that the code should be simple
+  to follow.
 
 # TODO Remove this later
 \nocite{*}

@@ -40,6 +40,7 @@ numbersep=7pt,
 xleftmargin=10pt
 }
 
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
 \lstloadlanguages{Haskell, Bash, Lisp}
 \lstset{
   basicstyle=\small\ttfamily,
@@ -610,6 +611,63 @@ defaultGoal { getRightOf = [(The a, Any [b,c,d])] }
 
 *** Finding a plan
     \label{sec:planning}
+    After having the problem file, the planner is feeded with this file along
+    with the domain file. These files were described in details in
+    section~\ref{sec:goal-gen}, and, therefore, they are not covered here again.
+    As for the planner, two distinct implementation of the fast forward
+    planner were tested. Fisrt, the simple fast forward planner \cite{ff} was
+    used, but after a few tests on metric-ff \cite{metric-ff}, the simple ff was
+    not used anymore due to its five times slower planning time.
+
+    The plan contains a list of pick and drop commands which can contain extra
+commands that are unrelevant in the plan. Such command can be for instance a
+pair of consecutive pick and drop commands on the same column. By removing these
+extra steps in the plan, a shorter and more optimal plan can be gained. This
+process is called pruning. This is done by the following code:
+
+\begin{lstlisting}[language=Haskell,escapechar=@]
+planFromFF :: String -> IO [String]
+planFromFF problem = withSystemTempFile "shrdlu.problem." $ \fp h -> do
+    hPutStr h problem
+    hClose h
+    let ff = "../bin/ff-wrapper.sh"
+        args = [fp]
+    (exitCode, out, err) <- readProcessWithExitCode ff args ""
+    let getNum = read . (!!1) . words :: String -> Int
+        moves  = lines out
+        @\textbf{prune}@ [] = []
+        @\textbf{prune}@ [x] = [x]
+        @\textbf{prune}@ (x:y:xys)
+            | getNum x /= getNum y = x : prune (y:xys)
+            | otherwise            = prune xys
+    if exitCode == ExitSuccess
+        then return (@\textbf{prune}@ moves)
+        else return $ ["# Got an error!"])
+\end{lstlisting}
+
+The planner is called from a wrapper shell script, called ff-wrapper.sh". It
+runs the 'ff' binary with the domain and problem files, check if there was any
+error, and parses the output.
+
+\begin{bash}
+domain="../planner-haskell/resources/shrdlu-dom.pddl"
+problem_file=$1
+
+# run planner
+ff_out=$(../bin/ff -o $domain -f $problem_file -s 5)
+
+# error checking
+if [[ $? != 0 ]] ; then
+    echo "Some error occured. Output from ff:"
+    echo ""
+    echo "$ff_out"
+    exit 1
+fi
+
+# parsing
+actions=$(echo -e "$ff_out" | egrep -i "(PICK|DROP)")
+echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
+\end{bash}
 
 ** Work in progress
    \label{sec:progress}

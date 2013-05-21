@@ -725,8 +725,6 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    This section mentions a subset of the viable additions for the
    project which might further increase its usability.
 
-   \todo{TODO E-proover, FOL, FOL->PDDL/STRIPS}
-
 *** Generating FOL to STRIPS
     Another possible solution for planning can be to merge FOL with STRIPS
     combining their positive features. By this, a planner can be gained that is

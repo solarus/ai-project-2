@@ -160,12 +160,12 @@ $~$
    of a three-dimensional block world implemented by Terry Winograd in late
    1960s and dscribed in his dissertation \cite{win1970shrdlu}.
 
-   #+CAPTION: The original SHRDLU,  in action on PDP-6 computer.
+   #+CAPTION: The original SHRDLU in action on PDP-6 computer.
    #+LABEL: fig:shrdlu3d
    #+ATTR_LATEX: width=0.38\textwidth wrap placement={Hr}{0.4\textwidth}
    [[./images/shrdlu_3d.png]]
 
-   Winograd´s planner called SHRDLU, allowed user interaction using simple
+   Winograd's planner called SHRDLU, allowed user interaction using simple
    English phrases, to operate in a three-dimensional world. It was also able to
    answer simple questions about the world such as "What does the green box
    contain?" and memorize names of the world's elemenets.

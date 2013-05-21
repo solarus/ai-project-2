@@ -459,7 +459,7 @@ findLocations world (List [Atom loc, thingDescr]) =
      predicates can be used as preconditions to actions and also for
      specifying goal states.
 
-\begin{lstlisting}[language=haskell, caption=The action \texttt{set-inside} as defined in the \shrdlite domain file., label=lst:set-inside]
+\begin{lstlisting}[language=lisp, caption=The action \texttt{set-inside} as defined in the \shrdlite domain file., label=lst:set-inside]
 ;; `x' is inside `box' if `y' is inside `box' and `x' is on `y'
 (:action set-inside
  :parameters   (?x ?y ?box)
@@ -486,11 +486,108 @@ findLocations world (List [Atom loc, thingDescr]) =
      :david:
      $~$
 
-     The last step before giving handing over the responsibility to
-     the planner is to generate a =PDDL= problem file. This file
-     contains the initial or current state of the world encoded using
-     the predicates found in the \shrdlite grammar in appendix
-     \ref{sec:shrdlite-dom}.
+     The last step before handing over the responsibility to the
+     planner is to generate a =PDDL= problem file. This file contains
+     the initial or current state of the world encoded using the
+     predicates found in the \shrdlite grammar in appendix
+     \ref{sec:shrdlite-dom}. A high level description of the \shrdlite
+     world can be found in \ref{sec:problem}. More detailed the
+     problem file initially defines the following properties for the
+     objects in the world:
+
+     - \setlength{\itemsep}{0cm} =smaller x y=: All blocks are smaller
+       than the floor and some objects are smaller than other objects.
+       This predicate defines that it is possible to place the =x= on
+       =y=. For example since nothing can be placed on balls then
+       nothing is smaller than any ball.
+     - =frozen f=: All floor tiles are frozen and cannot be moved.
+     - =clear x=: Things at the top of each stack including the floor
+       is clear.
+     - =inside x y=: In the initial state only boxes are inside
+       themselves.
+     - =on x y=: If block =x= is placed on top of thing =y= then =x=
+       is on =y=.
+     - =above x y= / =under x y=: In the initial state all things
+       are above and under themselves.
+     - =leftof x y= / =rightof x y= / =beside x y=: The floor tiles
+       are left-of, right-of and beside other floor tiles. The
+       difference by being beside and for instance left-of is that a
+       thing has to be directly left-of another thing to be considered
+       beside it.
+     - =stacked-on x c=: All blocks are stacked above some floor tile
+       (column =c=). The floor tiles are also stacked on themselves.
+
+     The predicates above specifies the initial state of the problem.
+     Whats left to do is encode the goal state of the problem given a
+     value of type =Goal=.
+
+\begin{haskell}
+data Goal = G
+    { getOn          :: [(Quantifier Block, Quantifier Thing)]
+      ...
+    , getBeside      :: [(Quantifier Block, Quantifier Block)]
+    , getHolding     :: [Block]
+    }
+\end{haskell}
+
+     The goal data type contains fields for all of the different types
+     of commands that can be given, for instance that a block should
+     be beside, left-of or above one, any or several other object. The
+     goal that the block =a= should be right-of any of the blocks =b=,
+     =c=, and =d= will be encoded in the following way:
+
+\begin{haskell}[caption=test]
+defaultGoal { getRightOf = [(The a, Any [b,c,d])] }
+\end{haskell}
+
+     For each quantifier pair in all of the lists in the goal data
+     type, a subgoal will be generated. Each of these subgoals is then
+     joined by a large conjunction. For example the pair above will be
+     exported to the following subgoal:
+
+\begin{lstlisting}[language=bash, caption=Resulting subgoal of \texttt{(The a, Any [b,c,d])}, label=lst:subgoal]
+(or (and (right-of a b) (above b f1))
+    (and (right-of a c) (above c f2))
+    (and (right-of a d) (above d f2)))
+\end{lstlisting}
+
+     Listing \ref{lst:subgoal} shows the subgoal generated from the
+     simple goal further above. A =right-of= predicate is generated
+     for each combination of elements from the first and second
+     quantifier. The predicates will be joined together using either
+     disjunctions, conjunctions or both depending on the quantifier
+     types used. Finally for each predicate an =above x f= predicate
+     will be added to specify that all objects found in the second
+     element of the pair should be present at the same column as in
+     the initial state. Adding this last predicate is usually the
+     right thing to do to make the planner behave in the way a user
+     intended. However, this will not always be correct. To see this
+     lets consider two different commands in the world seen in figure
+     \ref{fig:world2}.
+
+     #+CAPTION: A \shrdlite world featuring several blocks.
+     #+LABEL: fig:world2
+     #+ATTR_LATEX: placement=[H] width=14cm
+     [[./images/smallworld2.png]]
+
+     First let the first user command be "Move all red blocks to the
+     left of the tall blue block". This problem can be trivially
+     solved by a planner by moving the tall blue block to the right of
+     all red blocks, never moving the red blocks at all. This is
+     probably not what the user intended. However by enforcing all red
+     blocks to be above the same column at the end of the plan then
+     the only way to solve this problem is to actually move all red
+     blocks to the left of the initial position of the tall blue
+     block.
+
+     Now lets consider the following command in the same world: "Put
+     the yellow pyramid above all red blocks". The only way to solve
+     this problem is to stack the two red objects in the world on top
+     of each other and then moving the yellow pyramid on top of the
+     stack. Adding the =above= rule, which is done in our problem file
+     generation, actually inhibits us to solve the problem; you cannot
+     place the pyramid above both red blocks since they have to be on
+     different columns!
 
 **** Putting it all together
      \todo{Show how an example goal is computed from a command string}

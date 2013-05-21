@@ -357,7 +357,7 @@ $~$
 \caption{BNF of the user command language}
 \end{figure}
 
-    This bnf form tells all the possible combinations of words that were
+    This bnf form tells all possible combinations of words that were
     produced by the Grammatical Framework and the problem generator must
     be able to interpret.
 
@@ -579,7 +579,6 @@ getQuantifier q = case q of
 
 **** Generating a PDDL problem
      \label{sec:gen-problem}
-
      $~$
 
      The last step before handing over the responsibility to the
@@ -770,6 +769,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    project which might further increase its usability.
 
 *** Plan-pruning
+    \label{sec:plan-purning}
     It can happen that the planner does not produce a perfect plan. Several
     consecutive states end up in a state that was reached earlier. In this case
     these steps are superfluous and can be removed.
@@ -797,6 +797,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    project which might further increase its usability.
 
 *** Generating FOL to STRIPS
+    \label{sec:fol_to_strips}
     Another possible solution for planning can be to merge FOL with STRIPS
     combining their positive features. By this, a planner can be gained that is
     endowed by easy goal generation and openness for future grammar extensions.
@@ -810,10 +811,12 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     in terms of running time and solution length.
 
 * Results and Evaluation
+  \label{sec:results}
    \todo{TODO problem: "Besides Problem" two reds, blah blah...}
-   This chapter will present problems that required extra effort during
-   implementation and problems that are not solved correctly due to their
-   complexity and the lack of time spent on implementation.
+   This chapter will present problems from the laboratory descripion and
+   problems that required extra effort during
+   implementation. Moreover, in section \ref{sec:non_working}, problems, not solved correctly due to their
+   complexity and the lack of time spent on implementation, are presented.
    All of the user commands for these problems were executed from the same
    initial state, depicted by picture \ref{fig:init_state}.
 ** Problems with solution
@@ -833,20 +836,29 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 | Grasp the green pyramid                                  | 0.636s   | 2            |
 | Put it in a box                                          | 0.642s   | 1            |
 | Put a ball that is to the left of a pyramid inside a box | 0.679s   | 4            |
-| move all red blocks to the left of the tall blue block   | 1.550s   | 22           |
 | move all red boxes inside the white box                  | 1.394s   | 18           |
+| move all red blocks to the left of the tall blue block   | 1.550s   | 22           |
 | put all red blocks in the white box                      | 15.478s  | 42           |
 
+
+Putting all red blocks in the white box is a relatively hard problem, since
+it needs 42 steps to be solved. On the other hand, its planning time is still managable.
+Furthermore, commands requiring less than 25 steps are most of the time solved almost
+instantly. According to our experimentations, most of the sensible commands
+can be solved in less than 25 steps, which provides a pleasant user experience.
+
 ** Problems without working solution
-   - put the yellow ball above all red blocks
-     This problem is not executable since there is a rule that makes all the red
+   \label{sec:non_working}
+   - /put the yellow ball above all red blocks:/ \\
+     This problem is not executable since there is a rule that makes all red
      blocks to stay at their current position. However, the user's intention
-     would be to stack all the red block in one column and move the yellow
-     ball on the top of this stack.
-   - pick up the yellow pyramid above all red blocks
+     would be to stack all red blocks in one column and move the yellow
+     ball on the top of this stack. This problem was discussed in more detail at the
+     end of section \ref{sec:gen-problem}.
+   - /pick up the yellow pyramid above all red blocks:/\\
      The current implementation picks up a yellow pyramid that is on a red
      block. However, the expected result is to pick up the yellow pyramid that
-     is above all the red blocks. To achive this, all the red block must be
+     is above all red blocks. To achive this, all red blocks must be
      in one column, and the yellow pyramid must be above all of these red
      blocks.
 
@@ -983,7 +995,13 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
    - move command
 
    Report:
-   - Problem Description section,
+   - Section \ref{sec:problem}
+   - Section \ref{sec:parsing}
+   - Section \ref{sec:planning}
+   - Section \ref{sec:plan-purning}
+   - Section \ref{sec:future-fol}
+   - Section \ref{sec:fol_to_strips}
+   - Section \ref{sec:results}
 
 ** David Spångberg
 

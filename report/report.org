@@ -196,19 +196,62 @@ $~$
    operator and \textsc{Action Description Language} (ADL)), used here to
    generate intermidiate steps in the problem solution.
 
-** Available tools Bartek
-#   \todo{TODO FOL-theorem proovers, STRIPS, PDDL, GF}
+** Available tools
+#   \todo{TODO BARTEK: FOL-theorem provers, STRIPS, PDDL, GF}
 
+   During the implementation of the planner described here, several tools and
+   libraries were taken into consideration as possible aids or components of
+   \shrdlite. Some of these libraries were used and other are perhaps intended
+   as future work.
+
+   One possibility of solving a planning problem is to encode it into a language
+   of \emph{First Order Logic} (FOL) and then solve, using any appropriate FOL-
+   theorem prover. One of more known such provers is \emph{E-Prover} originally
+   developed by Stephan Shultz \cite{e-prover}. Some simple tests showed
+   however, that it is seemingly slow and more importantly, it generates large
+   solution paths even for simple problems. As the consequence, E-Prover was not
+   used in the project but perhaps should be eaxmined more thoroughly in the
+   future, see Section \ref{sec:future-fol}.
+
+   Another suitable usable language that is directly aimed at planning problems
+   is \emph{STRIPS}. The language has its roots in an automated planner with the
+   same name, developed in early 1970's, where it also was used to model the
+   problem. \emph{PDDL} is more recent attempt to standarize description of
+   domain and planning problems and is a subset of STRIPS. Fast Forward planner
+   mentioned above uses PDDL as input, therefore the domain and problems were
+   modelled using this language.
+
+   The PDDL input consists here of two parts: domain description and problem
+   description.
+   - *Domain Description* contains definitions of possible predicates on
+     objects populating the world as well as all possible actions that can be
+     taken to alter the world. Each action specifies a set of
+     \emph{precondititions} that must hold before the action in question can be
+     taken, together with a set of \emph{postconditions} that are assigned to be
+     true after the action has been taken. In some sense the domain defines a
+     global state and a set of methods that can alter it.
+
+   - *Problem Description* consists of an initial state definition of the world
+      and the desired end state, often called *goal state*. The state is simply
+      a set of predicates on world that hold at this state.
+
+   If the problem is solvable, the expected output is a list of actions taken to
+   reach goal state.
+
+   To be able to construct the goal, it is required to extract and interpret
+   information contained in user-provided commands. An asset used to accomplish
+   that was the Grammatical Framework, described in more detail in Section
+   \ref{sec:parsing}.
 
 * Overview of the architecture
    This section describes the parts of the project that has been finished,
    currently under development, or just an idea waiting to be implemented.
-   Section~\ref{sec:finished} shows a detailed view about the current design
+   Section \ref{sec:finished} shows a detailed view about the current design
    including the structure of the domain and problem file written in PDDL,
    the code level representation of the world, the goal creation process and
-   the interpretation of the parsed grammar tree. Section~\ref{sec:progress}
+   the interpretation of the parsed grammar tree. Section \ref{sec:progress}
    mainly contains the user commands that do not work as expected and,
-   therefore, these cases are still under investigation. Finally, section
+   therefore, these cases are still under investigation. Finally, Section
    \ref{sec:future} mentions some of the possibilities for further development.
 
 ** Finished work
@@ -699,6 +742,11 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     blocks that are beside all red blocks at the same time would be
     returned.
 
+** Future work
+   \label{sec:future}
+   This section mentions only a subset of the viable additions for the
+   project which might further increase its usability.
+
 *** Plan-pruning
     It can happen that the planner does not produce a perfect plan. Several
     consecutive states end up in a state that was reached earlier. In this case
@@ -713,6 +761,7 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
     the 'A -> B -> ... -> B' list of states can be reduced to 'A -> B'.
 
 *** First Order Logic
+    \label{sec:future-fol}
     After some fruitless experimentation with a FOL planner, the so-called
     E-prover, metric-ff was chosen for planning. This decision was based on its
     significantly higher running time and hardship of goal interpretation.

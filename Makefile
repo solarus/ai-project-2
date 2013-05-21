@@ -30,3 +30,6 @@ bin/metric-ff:
 clean:
 	make -C $(ff_path) clean
 	rm -f $(ff_path)/ff bin/metric-ff www/parser.cgi www/planner.cgi
+
+archive:
+	git archive --format=tar.gz --prefix=ai-project-2/ -o ai-project-2.tar.gz HEAD

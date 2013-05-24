@@ -780,6 +780,8 @@ echo "$actions" | cut -b 12- | sed -re 's/^(PICK|DROP).*F(\w*)$/\L\1 \2/i'
 
 *** First Order Logic
     \label{sec:future-fol}
+    \todo{Ambiguous description! Not clear if the e-prover or the metric-ff
+    was the slow. Rewrite this chapter!}
     After some fruitless experimentation with a FOL theorem prover, namely
     E-prover, metric-ff was chosen for planning. This decision was based on its
     significantly higher running time and hardship of goal interpretation.
